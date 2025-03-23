@@ -584,13 +584,6 @@ var deck = new Map([
     ["Ks", null]
 ]);
 
-function sleep(ms) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-  }
-
-// MAYBE INIT BOARD AS AN ARRAY WITH AN EMPTY ARRAY INSIDE SO THAT BOARD[length-1] returns an empty array at start of game - will remove need for if else in some spots
 var Board = [[]];
 var playerHands = new Array();
 var isNewRound = true;
@@ -607,15 +600,16 @@ var i = 0;
 var clients = {};
 
 wss.on('connection', function connection(ws) {
+    if (i > 3) {
+        console.log("max connections reached");
+        return;
+    }
     console.log("connected");
+    console.log(i);
 
     clients[i] = ws;
-    clients[i].send(JSON.stringify({"hand" :  [...playerHands[0]],
-        "play" : Board[Board.length - 1],
-        "playerTurn" : playerTurn,
-        "handLengths" : getHandLengths(playerHands),
-        "playerPasses":  playerPasses
-    }));
+    sendSocketGameState(clients[i], i);
+    i++;
 });
 
 
@@ -655,21 +649,10 @@ app.post('/turn', (req, res) => {
     
     logState();
 
-    // sendSocketGameState(ws0, 0);
-    // sendSocketGameState(ws1, 1);
-    // sendSocketGameState(ws2, 2);
-    // sendSocketGameState(ws3, 3);
-    // wss.emit()
-
-    if (clients[0]) {
-        var data = {"hand" :  [...playerHands[0]],
-            "play" : Board[Board.length - 1],
-            "playerTurn" : playerTurn,
-            "handLengths" : getHandLengths(playerHands),
-            "playerPasses":  playerPasses
-        };
-        clients[0].send(JSON.stringify(data));
-    }
+    sendSocketGameState(clients[0], 0);
+    sendSocketGameState(clients[1], 1);
+    sendSocketGameState(clients[2], 2);
+    sendSocketGameState(clients[3], 3);
 
     console.log("done")
     res.send('POST request to the homepage');
