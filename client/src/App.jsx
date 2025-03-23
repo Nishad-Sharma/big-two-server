@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const HighCardRanking = Object.freeze({
   "3d" : 1,
@@ -321,6 +321,41 @@ export default function Game() {
         
     }
 
+    function handleServerMessage(data) {
+        const parsedData = JSON.parse(data);
+        setPlayerTurn(parsedData.playerTurn);
+        setHandLengths(parsedData.handLengths);
+        setHand(new Map(parsedData.hand));
+        setPlayerPasses(parsedData.playerPasses);
+        setPlay(parsedData.play);
+    }
+
+    useEffect(
+        () => {
+            const socket = new WebSocket("ws://localhost:8085");
+
+            // Handle connection open
+            socket.onopen = () => {
+                console.log('WebSocket connection established');
+                // Perform any necessary actions when the connection is open
+            };
+
+            socket.onmessage = (event) => {
+                console.log("gottem")
+                console.log(`Received message: ${event.data}`);
+                handleServerMessage(event.data)
+                // Handle the received message as required
+            };
+
+            return () => {
+                if(socket.readyState === 1) {
+                    socket.close();
+                }
+            }
+        },
+        []
+    )
+
     var playerLengths = new Map();
     for (var i = 0; i < handLengths.length - 1; i++) {
         let index = (playerNo + 1 + i) % 4;
@@ -330,7 +365,7 @@ export default function Game() {
     const OpponentHands = []
     playerLengths.forEach((value, key) => {
         OpponentHands.push(<div key={key}><OpponentHand name={"Player " + key} handLength={value} currentPlayer={playerTurn} playerPasses={playerPasses}/><br/></div>);
-    })
+    })  
 
     return (
         <div>
@@ -350,6 +385,7 @@ export default function Game() {
             <br/>
             {OpponentHands}
             <Hand hand={hand} Fn={SelectCard} name={"Player " + playerNo} currentPlayer={playerTurn} className="hand"/>
+            <br/>
             <br/>
             <Play hand={play} name="Play"/>
         </div>

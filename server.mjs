@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser"
+import bodyParser from "body-parser";
+import WebSocket, { WebSocketServer } from 'ws';
+// const ws = require('ws');
 
 export const HandType = Object.freeze({
     "Invalid" : 1,
@@ -481,12 +483,51 @@ function getHandLengths() {
     var handLengths = playerHands.map((x) => x.size);
     return handLengths;
 }
-// EXPRESSSS
 
+function createPlayerSocket(playerNo) {
+    var playerSocket;
+    const port = Number("808" + playerNo)
+    // THIS NEEDS TO BE OUTSIDE MAYBE?? DO YOU NEED MULTIPLE
+    const wss = new WebSocketServer({
+        port: port,
+    });
+    
+    wss.on('connection', function connection(ws) {
+        // ws.id = playerNo;
+        // ws.
+        playerSocket = ws;
+        // playerSocket.send(JSON.stringify({"hand" :  [...playerHands[playerNo]],
+        //     "play" : Board[Board.length - 1],
+        //     "playerTurn" : playerTurn,
+        //     "handLengths" : getHandLengths(playerHands),
+        //     "playerPasses":  playerPasses
+        // }));
+        // webSockets[ws.id] = ws;
+        sendSocketGameState(playerSocket, playerNo);
+
+    });
+
+    // sendSocketGameState(playerSocket, playerNo);  
+    return playerSocket;
+}
+
+function sendSocketGameState(socket, playerNo) {
+    if (!socket) return;
+    var data = {"hand" :  [...playerHands[playerNo]],
+        "play" : Board[Board.length - 1],
+        "playerTurn" : playerTurn,
+        "handLengths" : getHandLengths(playerHands),
+        "playerPasses":  playerPasses
+    };
+    socket.send(JSON.stringify(data));
+}
+
+// EXPRESSSS
 const app = express();
 app.use(cors());
 app.use(bodyParser.json())
 const port = 3005;
+
 
 var deck = new Map([
     ["Ad", null],
@@ -543,7 +584,14 @@ var deck = new Map([
     ["Ks", null]
 ]);
 
-var Board = [];
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+// MAYBE INIT BOARD AS AN ARRAY WITH AN EMPTY ARRAY INSIDE SO THAT BOARD[length-1] returns an empty array at start of game - will remove need for if else in some spots
+var Board = [[]];
 var playerHands = new Array();
 var isNewRound = true;
 var playerPasses = [false, false, false, false];
@@ -551,23 +599,37 @@ DealDeck(deck, playerHands);
 var playerTurn = getStartingPlayer();
 
 
+const wss = new WebSocketServer({
+    port: 8085,
+});
+
+var i = 0;
+var clients = {};
+
+wss.on('connection', function connection(ws) {
+    console.log("connected");
+
+    clients[i] = ws;
+    clients[i].send(JSON.stringify({"hand" :  [...playerHands[0]],
+        "play" : Board[Board.length - 1],
+        "playerTurn" : playerTurn,
+        "handLengths" : getHandLengths(playerHands),
+        "playerPasses":  playerPasses
+    }));
+});
+
+
+console.log(playerHands[0]);
+
 console.log("playerTurn : " + playerTurn)
+
 app.get('/:playerNo', (req, res) => {
-    if (Board.length < 1) {
-        res.send({"hand" :  [...playerHands[req.params.playerNo]],
-            "play" : [],
-            "playerTurn" : playerTurn,
-            "handLengths" : getHandLengths(playerHands),
-            "playerPasses":  playerPasses
-        });
-    } else {
-        res.send({"hand" :  [...playerHands[req.params.playerNo]],
-            "play" : Board[Board.length - 1],
-            "playerTurn" : playerTurn,
-            "handLengths" : getHandLengths(playerHands),
-            "playerPasses":  playerPasses
-        });
-    }
+    //     res.send({"hand" :  [...playerHands[req.params.playerNo]],
+    //     "play" : Board[Board.length - 1],
+    //     "playerTurn" : playerTurn,
+    //     "handLengths" : getHandLengths(playerHands),
+    //     "playerPasses":  playerPasses
+    // });
 })
 
 app.get('/hands', (req, res) => {
@@ -593,6 +655,23 @@ app.post('/turn', (req, res) => {
     
     logState();
 
+    // sendSocketGameState(ws0, 0);
+    // sendSocketGameState(ws1, 1);
+    // sendSocketGameState(ws2, 2);
+    // sendSocketGameState(ws3, 3);
+    // wss.emit()
+
+    if (clients[0]) {
+        var data = {"hand" :  [...playerHands[0]],
+            "play" : Board[Board.length - 1],
+            "playerTurn" : playerTurn,
+            "handLengths" : getHandLengths(playerHands),
+            "playerPasses":  playerPasses
+        };
+        clients[0].send(JSON.stringify(data));
+    }
+
+    console.log("done")
     res.send('POST request to the homepage');
 });
 
