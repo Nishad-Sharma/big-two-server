@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import WebSocket, { WebSocketServer } from 'ws';
-// const ws = require('ws');
 
 export const HandType = Object.freeze({
     "Invalid" : 1,
@@ -410,27 +409,12 @@ function handleTurn(playerNo, playedCards) {
 
     if (Board.length == 0 && !(playedCards.includes("3d"))) return false;
 
-
     if (!isNewRound && !isStronger(Board[Board.length - 1], playedCards)) return false;
-    // if (isNewRound) {
-    //     Board.push(playedCards);
-    //     removeCardsFromHand(playerHands[playerNo], playedCards);
-    //     playerTurn = findNextPlayer(playerPasses, playerTurn);
-    //     isNewRound = false;
-    // } else if (isStronger(Board[Board.length - 1], playedCards)) {
-    //     Board.push(playedCards);
-    //     removeCardsFromHand(playerHands[playerNo], playedCards);
-    //     playerTurn = findNextPlayer(playerPasses, playerTurn);
-    //     isNewRound = false;
-    // }
-    // console.log("yeayya")
-    // console.log(Board)
 
     Board.push(playedCards);
     removeCardsFromHand(playerHands[playerNo], playedCards);
     playerTurn = findNextPlayer(playerPasses, playerTurn);
     isNewRound = false;
-
 }
 
 function getStartingPlayer() {
@@ -484,33 +468,6 @@ function getHandLengths() {
     return handLengths;
 }
 
-function createPlayerSocket(playerNo) {
-    var playerSocket;
-    const port = Number("808" + playerNo)
-    // THIS NEEDS TO BE OUTSIDE MAYBE?? DO YOU NEED MULTIPLE
-    const wss = new WebSocketServer({
-        port: port,
-    });
-    
-    wss.on('connection', function connection(ws) {
-        // ws.id = playerNo;
-        // ws.
-        playerSocket = ws;
-        // playerSocket.send(JSON.stringify({"hand" :  [...playerHands[playerNo]],
-        //     "play" : Board[Board.length - 1],
-        //     "playerTurn" : playerTurn,
-        //     "handLengths" : getHandLengths(playerHands),
-        //     "playerPasses":  playerPasses
-        // }));
-        // webSockets[ws.id] = ws;
-        sendSocketGameState(playerSocket, playerNo);
-
-    });
-
-    // sendSocketGameState(playerSocket, playerNo);  
-    return playerSocket;
-}
-
 function sendSocketGameState(socket, playerNo) {
     if (!socket) return;
     var data = {"hand" :  [...playerHands[playerNo]],
@@ -521,13 +478,6 @@ function sendSocketGameState(socket, playerNo) {
     };
     socket.send(JSON.stringify(data));
 }
-
-// EXPRESSSS
-const app = express();
-app.use(cors());
-app.use(bodyParser.json())
-const port = 3005;
-
 
 var deck = new Map([
     ["Ad", null],
@@ -592,38 +542,32 @@ DealDeck(deck, playerHands);
 var playerTurn = getStartingPlayer();
 
 
-const wss = new WebSocketServer({
-    port: 8085,
-});
+// EXPRESSSS
+const app = express();
+app.use(cors());
+app.use(bodyParser.json())
+const port = 8085;
 
-var i = 0;
-var clients = {};
+const wss = new WebSocketServer({ noServer: true })
 
-wss.on('connection', function connection(ws) {
-    if (i > 3) {
-        console.log("max connections reached");
-        return;
-    }
-    console.log("connected");
-    console.log(i);
+const server = app.listen(port, '0.0.0.0', () => {
+    console.log(`App listening on port ${port}`)
+})
 
-    clients[i] = ws;
-    sendSocketGameState(clients[i], i);
-    i++;
-});
+server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, socket => {
+        wss.emit('connection', socket, request)
+    })
+})
 
+wss.on('connection', socket => {
+    socket.on('error', err => console.error('Websocket error:', err))
 
-console.log(playerHands[0]);
-
-console.log("playerTurn : " + playerTurn)
-
-app.get('/:playerNo', (req, res) => {
-    //     res.send({"hand" :  [...playerHands[req.params.playerNo]],
-    //     "play" : Board[Board.length - 1],
-    //     "playerTurn" : playerTurn,
-    //     "handLengths" : getHandLengths(playerHands),
-    //     "playerPasses":  playerPasses
-    // });
+    socket.on('message', message => {
+        const data = JSON.parse(Buffer.from(message).toString());
+        socket.userData = { userId: data.message}
+        sendSocketGameState(socket, socket.userData.userId);
+    })  
 })
 
 app.get('/hands', (req, res) => {
@@ -649,17 +593,12 @@ app.post('/turn', (req, res) => {
     
     logState();
 
-    sendSocketGameState(clients[0], 0);
-    sendSocketGameState(clients[1], 1);
-    sendSocketGameState(clients[2], 2);
-    sendSocketGameState(clients[3], 3);
+    console.log("SEND GAME STATE");
+    wss.clients.forEach(client => {
+        sendSocketGameState(client, client.userData.userId);
+    })
+
 
     console.log("done")
     res.send('POST request to the homepage');
-});
-
-
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
 });

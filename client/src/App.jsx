@@ -275,7 +275,7 @@ export default function Game() {
             }
         })
 
-        const url = "http://localhost:3005/turn";
+        const url = "http://localhost:8085/turn";
         const payload = {playerNo: playerNo, hand: turnArray};
         if (isPass) payload['hand'] = []
 
@@ -301,25 +301,25 @@ export default function Game() {
         setHand(currentHand);
     };
 
-    function http() {
-        const okUrl = "http://localhost:3005/" + playerNo;
+    // function http() {
+    //     const okUrl = "http://localhost:3005/" + playerNo;
 
-        fetch(okUrl)
-        .then((response) => {
-          console.log(response);
-          return response;
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          setPlayerTurn(data.playerTurn);
-          setHandLengths(data.handLengths);
-          setHand(new Map(data.hand));
-          setPlayerPasses(data.playerPasses);
-          setPlay(data.play);
-        });
+    //     fetch(okUrl)
+    //     .then((response) => {
+    //       console.log(response);
+    //       return response;
+    //     })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       console.log(data);
+    //       setPlayerTurn(data.playerTurn);
+    //       setHandLengths(data.handLengths);
+    //       setHand(new Map(data.hand));
+    //       setPlayerPasses(data.playerPasses);
+    //       setPlay(data.play);
+    //     });
         
-    }
+    // }
 
     function handleServerMessage(data) {
         const parsedData = JSON.parse(data);
@@ -337,6 +337,7 @@ export default function Game() {
             // Handle connection open
             socket.onopen = () => {
                 console.log('WebSocket connection established');
+                socket.send(JSON.stringify({ type: 'clientHello', message: playerNo }))
                 // Perform any necessary actions when the connection is open
             };
 
@@ -370,9 +371,9 @@ export default function Game() {
     return (
         <div>
         <div>
-            <button onClick={() => http(playerTurn)}>
+            {/* <button onClick={() => http(playerTurn)}>
                 HTTP
-            </button>
+            </button> */}
             <button onClick={() => sendTurn(false)}>
                 Play
             </button>
