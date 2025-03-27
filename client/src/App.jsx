@@ -258,6 +258,7 @@ export default function Game() {
     const [playerNo, setPlayerNo] = useState(0);
     const [playerPasses, setPlayerPasses] = useState(new Array(false, false, false, false));
     const [handLengths, setHandLengths] = useState(new Array(0, 0, 0, 0));
+    const baseUrl = "https://big-two-server.onrender.com"
 
     function sortHand(hand) {
         if (areArraysEqual(Array.from(sortHandByRank(hand).keys()), Array.from(hand.keys()))) {
@@ -273,7 +274,8 @@ export default function Game() {
         setPlayerNo(pNo);
         console.log(pNo);
 
-        const url = "http://localhost:8085/changePlayer";
+        // const url = "http://localhost:8085/changePlayer";
+        const url = baseUrl + "/changePlayer";
         const payload = {playerNo: pNo};
 
         const response = fetch(url, {
@@ -294,7 +296,7 @@ export default function Game() {
             }
         })
 
-        const url = "http://localhost:8085/turn";
+        const url = baseUrl + "/turn";
         const payload = {playerNo: playerNo, hand: turnArray};
         if (isPass) payload['hand'] = []
 
@@ -352,7 +354,8 @@ export default function Game() {
 
     useEffect(
         () => {
-            const socket = new WebSocket("ws://localhost:8085");
+            // const socket = new WebSocket("ws://localhost:8085");
+            const socket = new WebSocket("ws://big-two-server.onrender.com");
 
             // Handle connection open
             socket.onopen = () => {
