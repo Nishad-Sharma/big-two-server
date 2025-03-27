@@ -258,7 +258,11 @@ export default function Game() {
     const [playerNo, setPlayerNo] = useState(0);
     const [playerPasses, setPlayerPasses] = useState(new Array(false, false, false, false));
     const [handLengths, setHandLengths] = useState(new Array(0, 0, 0, 0));
+    const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
+    const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
 
+    console.log(baseURL);
+    
     function sortHand(hand) {
         if (areArraysEqual(Array.from(sortHandByRank(hand).keys()), Array.from(hand.keys()))) {
             setHand(sortHandBySuit(hand));
@@ -284,7 +288,7 @@ export default function Game() {
             }
         })
 
-        const url = "http://localhost:8085/turn";
+        const url = baseURL + "/turn";
         const payload = {playerNo: playerNo, hand: turnArray};
         if (isPass) payload['hand'] = []
 
@@ -310,26 +314,6 @@ export default function Game() {
         setHand(currentHand);
     };
 
-    // function http() {
-    //     const okUrl = "http://localhost:3005/" + playerNo;
-
-    //     fetch(okUrl)
-    //     .then((response) => {
-    //       console.log(response);
-    //       return response;
-    //     })
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       console.log(data);
-    //       setPlayerTurn(data.playerTurn);
-    //       setHandLengths(data.handLengths);
-    //       setHand(new Map(data.hand));
-    //       setPlayerPasses(data.playerPasses);
-    //       setPlay(data.play);
-    //     });
-        
-    // }
-
     function handleServerMessage(data) {
         console.log("HANDLING DATA");
         const parsedData = JSON.parse(data);
@@ -342,7 +326,7 @@ export default function Game() {
 
     useEffect(
         () => {
-            const socket = new WebSocket("ws://localhost:8085");
+            const socket = new WebSocket(websocketURL);
 
             // Handle connection open
             socket.onopen = () => {
