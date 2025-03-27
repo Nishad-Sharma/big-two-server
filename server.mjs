@@ -546,7 +546,7 @@ var playerTurn = getStartingPlayer();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json())
-const port = 8085;
+const port = process.env.PORT || 8085;
 
 const wss = new WebSocketServer({ noServer: true })
 
@@ -573,6 +573,17 @@ wss.on('connection', socket => {
 app.get('/hands', (req, res) => {
     res.send({"hand0" :  [...playerHands[0]], "hand1" : [...playerHands[1]], "hand2" : [...playerHands[2]], "hand3" : [...playerHands[3]]});
 });
+
+app.post('/changePlayer', (req, res) => {
+    console.log("changePlayer")
+    wss.clients.forEach(client => {
+        console.log(client.userData.userId)
+        client.userData.userId = req.body.playerNo;
+        console.log(client.userData.userId)
+        sendSocketGameState(client, client.userData.userId);
+    })
+    res.send("POST changing player");
+})
 
 app.post('/turn', (req, res) => {
     console.log("request")

@@ -254,7 +254,8 @@ export default function Game() {
     const [play, setPlay] = useState(new Array());
     const [playerTurn, setPlayerTurn] = useState(0);
     //this probs doesnt have to be state
-    const [playerNo, setPlayerNo] = useState(Number(window.location.pathname.substring(1)));
+    // const [playerNo, setPlayerNo] = useState(Number(window.location.pathname.substring(1)));
+    const [playerNo, setPlayerNo] = useState(0);
     const [playerPasses, setPlayerPasses] = useState(new Array(false, false, false, false));
     const [handLengths, setHandLengths] = useState(new Array(0, 0, 0, 0));
 
@@ -264,6 +265,24 @@ export default function Game() {
         } else {
             setHand(sortHandByRank(hand));
         }
+    }
+
+    function changePlayer() {
+        var pNo = playerNo;
+        pNo = (pNo + 1) % 4;
+        setPlayerNo(pNo);
+        console.log(pNo);
+
+        const url = "http://localhost:8085/changePlayer";
+        const payload = {playerNo: pNo};
+
+        const response = fetch(url, {
+            method : "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        })
     }
 
     function sendTurn(isPass) {
@@ -322,6 +341,7 @@ export default function Game() {
     // }
 
     function handleServerMessage(data) {
+        console.log("HANDLING DATA");
         const parsedData = JSON.parse(data);
         setPlayerTurn(parsedData.playerTurn);
         setHandLengths(parsedData.handLengths);
@@ -357,6 +377,8 @@ export default function Game() {
         []
     )
 
+
+
     var playerLengths = new Map();
     for (var i = 0; i < handLengths.length - 1; i++) {
         let index = (playerNo + 1 + i) % 4;
@@ -374,6 +396,9 @@ export default function Game() {
             {/* <button onClick={() => http(playerTurn)}>
                 HTTP
             </button> */}
+            <button onClick={() => changePlayer()}>
+                Change Player
+            </button>
             <button onClick={() => sendTurn(false)}>
                 Play
             </button>
