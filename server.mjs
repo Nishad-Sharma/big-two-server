@@ -476,7 +476,8 @@ function sendSocketGameState(socket, playerID) {
         "play" : Board[Board.length - 1],
         "playerTurn" : playerTurn,
         "handLengths" : getHandLengths(playerHands),
-        "playerPasses":  playerPasses
+        "playerPasses":  playerPasses,
+        "playerNo": playerNo
     };
     socket.send(JSON.stringify(data));
 }

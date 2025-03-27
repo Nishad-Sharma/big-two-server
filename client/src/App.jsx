@@ -322,6 +322,7 @@ export default function Game() {
         setHand(new Map(parsedData.hand));
         setPlayerPasses(parsedData.playerPasses);
         setPlay(parsedData.play);
+        setPlayerNo(parsedData.playerNo);
     }
 
     useEffect(
