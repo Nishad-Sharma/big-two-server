@@ -468,8 +468,10 @@ function getHandLengths() {
     return handLengths;
 }
 
-function sendSocketGameState(socket, playerNo) {
+function sendSocketGameState(socket, playerID) {
     if (!socket) return;
+    const playerNo = userIdToPlayerNo.get(playerID);
+    console.log("send playerNo: " + playerNo)
     var data = {"hand" :  [...playerHands[playerNo]],
         "play" : Board[Board.length - 1],
         "playerTurn" : playerTurn,
@@ -535,11 +537,15 @@ var deck = new Map([
 ]);
 
 var Board = [[]];
+// TODO: turn this into map to track hands with playerID
 var playerHands = new Array();
+var userIdToPlayerNo = new Map();
 var isNewRound = true;
 var playerPasses = [false, false, false, false];
 DealDeck(deck, playerHands);
 var playerTurn = getStartingPlayer();
+
+console.log(playerHands);
 
 
 // EXPRESSSS
@@ -560,30 +566,40 @@ server.on('upgrade', (request, socket, head) => {
     })
 })
 
+
 wss.on('connection', socket => {
+    
+    console.log("no clients: "  + wss.clients.size);
     socket.on('error', err => console.error('Websocket error:', err))
 
     socket.on('message', message => {
+        console.log(message);
         const data = JSON.parse(Buffer.from(message).toString());
-        socket.userData = { userId: data.message}
-        sendSocketGameState(socket, socket.userData.userId);
+        console.log(data);
+        socket.userData = { userId: data.message};
+        console.log("userIDtoPlayerNo Size: " + userIdToPlayerNo.size);
+        if (userIdToPlayerNo.has(data.message)) {
+            sendSocketGameState(socket, data.message);
+        }
+        
+        if (userIdToPlayerNo.size < 4) {
+            console.log("entered")
+            userIdToPlayerNo.set(data.message, userIdToPlayerNo.size);
+            sendSocketGameState(socket, socket.userData.userId);
+
+        } else {
+            console.log("too many players");
+        }
     })  
+
+    socket.on('close', function close() {
+        console.log("Websocket closed");
+      });
 })
 
 app.get('/hands', (req, res) => {
     res.send({"hand0" :  [...playerHands[0]], "hand1" : [...playerHands[1]], "hand2" : [...playerHands[2]], "hand3" : [...playerHands[3]]});
 });
-
-app.post('/changePlayer', (req, res) => {
-    console.log("changePlayer")
-    wss.clients.forEach(client => {
-        console.log(client.userData.userId)
-        client.userData.userId = req.body.playerNo;
-        console.log(client.userData.userId)
-        sendSocketGameState(client, client.userData.userId);
-    })
-    res.send("POST changing player");
-})
 
 app.post('/turn', (req, res) => {
     console.log("request")

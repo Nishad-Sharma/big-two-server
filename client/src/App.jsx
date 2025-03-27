@@ -272,17 +272,7 @@ export default function Game() {
         pNo = (pNo + 1) % 4;
         setPlayerNo(pNo);
         console.log(pNo);
-
-        const url = "http://localhost:8085/changePlayer";
-        const payload = {playerNo: pNo};
-
-        const response = fetch(url, {
-            method : "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload)
-        })
+        console.log(playerNo);
     }
 
     function sendTurn(isPass) {
@@ -369,12 +359,10 @@ export default function Game() {
             };
 
             return () => {
-                if(socket.readyState === 1) {
-                    socket.close();
-                }
+                socket.close();
             }
         },
-        []
+        [playerNo]
     )
 
 
