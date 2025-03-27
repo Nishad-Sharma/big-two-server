@@ -322,26 +322,6 @@ export default function Game() {
         setHand(currentHand);
     };
 
-    // function http() {
-    //     const okUrl = "http://localhost:3005/" + playerNo;
-
-    //     fetch(okUrl)
-    //     .then((response) => {
-    //       console.log(response);
-    //       return response;
-    //     })
-    //     .then((response) => response.json())
-    //     .then((data) => {
-    //       console.log(data);
-    //       setPlayerTurn(data.playerTurn);
-    //       setHandLengths(data.handLengths);
-    //       setHand(new Map(data.hand));
-    //       setPlayerPasses(data.playerPasses);
-    //       setPlay(data.play);
-    //     });
-        
-    // }
-
     function handleServerMessage(data) {
         console.log("HANDLING DATA");
         const parsedData = JSON.parse(data);
@@ -355,7 +335,7 @@ export default function Game() {
     useEffect(
         () => {
             // const socket = new WebSocket("ws://localhost:8085");
-            const socket = new WebSocket("ws://big-two-server.onrender.com");
+            const socket = new WebSocket("wss://big-two-server.onrender.com");
 
             // Handle connection open
             socket.onopen = () => {
