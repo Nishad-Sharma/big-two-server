@@ -1,9 +1,10 @@
+import Player from "./player.js";
+
 export default class Game {
     constructor() {
-        this.board = [[]];
-        this.hands = [];
+        this.board = [];
+        this.players = [];
         this.isNewRound = true;
-        this.playerPasses = [false, false, false, false];
         this.playerTurn = 0;
     }
 
@@ -62,6 +63,20 @@ export default class Game {
         }
         return playerTurn;
     }
+
+    getGameStateForPlayer(playerID, players) {
+        if (!socket) return;
+        console.log("send playerNo: " + playerNo);
+        var hiddenHands = this.hands.map(hand = hand.length);
+        hiddenHands[playerNo] = this.hands[playerNo];
+        return data = {
+            "play" : this.board,
+            "playerTurn" : playerTurn,
+            "hands" : playerHands,
+            "playerPasses":  playerPasses,
+            "players": players
+        };
+    }
     
     logState() {
         console.log("Start Logging State");
@@ -100,7 +115,7 @@ export default class Game {
     play(playerNo, playedCards) {
         if (!isPlayerTurn(playerNo)) return false;
     
-        if (!doesHandContainsCards(playerHands[playerNo], playedCards)) return false;
+        if (!this.doesHandContainsCards(playerHands[playerNo], playedCards)) return false;
     
         if (getHandType(playedCards) == HandType.Invalid) return false;
     
@@ -472,23 +487,6 @@ export function evaluateHand(hand) {
         let rank = sortedHand[2].substring(0, sortedHand[2].length -1);
         return RankOrder[rank];
     } 
-}
-
-
-
-function sendSocketGameState(socket, playerID) {
-    if (!socket) return;
-    const playerNo = userIdToPlayerNo.get(playerID);
-    console.log("send playerNo: " + playerNo)
-    playerHands
-    var data = {
-        "play" : Board[Board.length - 1],
-        "playerTurn" : playerTurn,
-        "hands" : playerHands,
-        "playerPasses":  playerPasses,
-        "playerNo": playerNo
-    };
-    socket.send(JSON.stringify(data));
 }
 
 var deck = new Map([
