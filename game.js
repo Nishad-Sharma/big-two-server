@@ -1,9 +1,7 @@
 export default class Game {
     constructor() {
         this.board = [[]];
-        // TODO: turn this into map to track hands with playerID
-        this.hands = new Array();
-        // var userIdToPlayerNo = new Map();
+        this.hands = [];
         this.isNewRound = true;
         this.playerPasses = [false, false, false, false];
         this.playerTurn = 0;
@@ -41,9 +39,7 @@ export default class Game {
         let Cards = Array.from(Deck.keys())
         var randomNumber = Math.round((Math.random() * (Cards.length-1)))
         let Card = Cards[randomNumber]
-        var currentDeck = Deck;
-        currentDeck.delete(Card);
-        Deck = currentDeck;
+        Deck.delete();
         return Card;
     }
 
@@ -89,45 +85,46 @@ export default class Game {
     }
     
     isRoundComplete() {
-        if (playerPasses.filter((x) => x != false).length >= 3) return true;
-        return false;
+        return this.playerPasses.filter((x) => x == true).length >= 3
     }
     
-    handlePass(playerNo) {
-        if (isNewRound) return;
-        if (playerNo == playerTurn) {
-            playerPasses[playerNo] = true;
-            playerTurn = findNextPlayer();    
-        }
+    pass(playerNo) {
+        if (isNewRound) return false;
+        if (playerNo != this.playerTurn) return false;
+   
+        playerPasses[playerNo] = true;
+        playerTurn = this.findNextPlayer();
+        return true;    
     };
     
-    handleTurn(playerNo, playedCards) {
+    play(playerNo, playedCards) {
         if (!isPlayerTurn(playerNo)) return false;
     
         if (!doesHandContainsCards(playerHands[playerNo], playedCards)) return false;
     
         if (getHandType(playedCards) == HandType.Invalid) return false;
     
-        if (Board.length == 0 && !(playedCards.includes("3d"))) return false;
+        if (this.board.length == 0 && !(playedCards.includes("3d"))) return false;
     
         if (!isNewRound && !isStronger(Board[Board.length - 1], playedCards)) return false;
     
-        Board.push(playedCards);
-        removeCardsFromHand(playerHands[playerNo], playedCards);
-        playerTurn = findNextPlayer(playerPasses, playerTurn);
-        isNewRound = false;
+        this.board.push(playedCards);
+        this.removeCardsFromHand(playerNo, playedCards);
+        this.playerTurn = this.findNextPlayer(this.playerPasses, this.playerTurn);
+        this.isNewRound = false;
+        return true;
     }
     
     getStartingPlayer() {
         for (let i = 0; i < 4; i++) {
-            if (playerHands[i].has("3d")) {
+            if (this.hands[i].has("3d")) {
                 return i;
             }
         }
     }
     
     getHandLengths() {
-        var handLengths = playerHands.map((x) => x.size);
+        var handLengths = this.hands.map((x) => x.size);
         return handLengths;
     }
     
@@ -140,6 +137,16 @@ export default class Game {
         return true;
     }
 
+    isPlayerTurn(playerNo) {
+        if (playerNo == this.playerTurn) return true;
+        return false;
+    }
+    
+    removeCardsFromHand(playerNo, playedCards) {
+        playedCards.forEach((card) => {
+            this.hands[playerNo].delete(card);
+        })
+    }
 }
 
 
@@ -465,19 +472,6 @@ export function evaluateHand(hand) {
         let rank = sortedHand[2].substring(0, sortedHand[2].length -1);
         return RankOrder[rank];
     } 
-}
-
-
-
-function isPlayerTurn(playerNo) {
-    if (playerNo == playerTurn) return true;
-    return false;
-}
-
-function removeCardsFromHand(hand, playedCards) {
-    playedCards.forEach((card) => {
-        hand.delete(card);
-    })
 }
 
 
