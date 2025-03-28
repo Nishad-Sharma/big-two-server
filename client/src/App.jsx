@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { LoginForm } from "./LoginForm";
 
 const HighCardRanking = Object.freeze({
   "3d" : 1,
@@ -255,9 +256,9 @@ export default function Game() {
     const [playerTurn, setPlayerTurn] = useState(0);
     //this probs doesnt have to be state
     // const [playerNo, setPlayerNo] = useState(Number(window.location.pathname.substring(1)));
-    const [playerNo, setPlayerNo] = useState(0);
     const [playerPasses, setPlayerPasses] = useState(new Array(false, false, false, false));
     const [handLengths, setHandLengths] = useState(new Array(0, 0, 0, 0));
+    const [playerID, setPlayerID] = useState("");
     const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
     const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
 
@@ -271,14 +272,6 @@ export default function Game() {
         }
     }
 
-    function changePlayer() {
-        var pNo = playerNo;
-        pNo = (pNo + 1) % 4;
-        setPlayerNo(pNo);
-        console.log(pNo);
-        console.log(playerNo);
-    }
-
     function sendTurn(isPass) {
         if (CountSelected(hand) == 0 && !isPass) return;
         var turnArray = new Array();
@@ -289,7 +282,7 @@ export default function Game() {
         })
 
         const url = baseURL + "/turn";
-        const payload = {playerNo: playerNo, hand: turnArray};
+        const payload = {playerNo: playerId, hand: turnArray};
         if (isPass) payload['hand'] = []
 
         const response = fetch(url, {
@@ -322,7 +315,6 @@ export default function Game() {
         setHand(new Map(parsedData.hand));
         setPlayerPasses(parsedData.playerPasses);
         setPlay(parsedData.play);
-        setPlayerNo(parsedData.playerNo);
     }
 
     useEffect(
@@ -332,7 +324,7 @@ export default function Game() {
             // Handle connection open
             socket.onopen = () => {
                 console.log('WebSocket connection established');
-                socket.send(JSON.stringify({ type: 'clientHello', message: playerNo }))
+                socket.send(JSON.stringify({ type: 'clientHello', message: playerId }))
                 // Perform any necessary actions when the connection is open
             };
 
@@ -369,9 +361,7 @@ export default function Game() {
             {/* <button onClick={() => http(playerTurn)}>
                 HTTP
             </button> */}
-            <button onClick={() => changePlayer()}>
-                Change Player
-            </button>
+            <LoginForm PlayerID={PlayerID} onPlayerIDTextChange={setPlayerID}></LoginForm>
             <button onClick={() => sendTurn(false)}>
                 Play
             </button>
@@ -383,7 +373,7 @@ export default function Game() {
             </button>
             <br/>
             {OpponentHands}
-            <Hand hand={hand} Fn={SelectCard} name={"Player " + playerNo} currentPlayer={playerTurn} className="hand"/>
+            <Hand hand={hand} Fn={SelectCard} name={playerID} currentPlayer={playerTurn} className="hand"/>
             <br/>
             <br/>
             <Play hand={play} name="Play"/>

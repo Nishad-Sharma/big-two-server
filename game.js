@@ -1,10 +1,148 @@
-import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import WebSocket, { WebSocketServer } from 'ws';
-import Game from "./game.js";
+export default class Game {
+    constructor() {
+        this.board = [[]];
+        // TODO: turn this into map to track hands with playerID
+        this.hands = new Array();
+        // var userIdToPlayerNo = new Map();
+        this.isNewRound = true;
+        this.playerPasses = [false, false, false, false];
+        this.playerTurn = 0;
+    }
 
-var game = new Game();
+    DealDeck(Deck) {
+        var dealPlayer = 0;
+        var tempHand0 = new Map();
+        var tempHand1 = new Map();
+        var tempHand2 = new Map();
+        var tempHand3 = new Map();
+        while (Array.from(Deck.keys()).length > 0) {
+            let card = this.DealCard(Deck);
+            dealPlayer = dealPlayer % 4;
+            if (dealPlayer == 0) {
+                tempHand0.set(card, 0);
+            } else if (dealPlayer == 1) {
+                tempHand1.set(card, 0);
+            } else if (dealPlayer == 2) {
+                tempHand2.set(card, 0);
+            } else if (dealPlayer == 3) {
+                tempHand3.set(card, 0);
+            }
+    
+            dealPlayer += 1;
+        }
+        this.hands.push((tempHand0));
+        this.hands.push((tempHand1));
+        this.hands.push((tempHand2));
+        this.hands.push((tempHand3));
+        // return tempHands;
+    }
+
+    DealCard(Deck) {
+        let Cards = Array.from(Deck.keys())
+        var randomNumber = Math.round((Math.random() * (Cards.length-1)))
+        let Card = Cards[randomNumber]
+        var currentDeck = Deck;
+        currentDeck.delete(Card);
+        Deck = currentDeck;
+        return Card;
+    }
+
+    isGameOver() {
+        for (let hand of this.hands) {
+            if (hand.size == 0) {
+                console.log("GAME OVER");
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    findNextPlayer() {
+        for (var i = 0; i < playerPasses.length; i++) {
+            let index = (playerTurn + 1 + i) % 4;
+            if (playerPasses[index] == false) {
+                return index;
+            }
+        }
+        return playerTurn;
+    }
+    
+    logState() {
+        console.log("Start Logging State");
+        console.log("hands : ");
+        for (var i = 0; i < playerHands.length; i++) {
+            console.log("hand " + i + " | count : " + playerHands[i].size);
+            console.log(playerHands[i].entries());
+        }
+        console.log("playerTurn : "  + playerTurn);
+        console.log("newRound : "  + isNewRound);
+        console.log("play : "  + Board);
+        console.log("playerPasses : "  + playerPasses);
+        console.log("gameEnd : " + isGameOver())
+        console.log("End Logging State");
+    }
+    
+    resetRound() {
+        isNewRound = true;
+        playerPasses = [false, false, false, false];
+        Board.push([]);
+    }
+    
+    isRoundComplete() {
+        if (playerPasses.filter((x) => x != false).length >= 3) return true;
+        return false;
+    }
+    
+    handlePass(playerNo) {
+        if (isNewRound) return;
+        if (playerNo == playerTurn) {
+            playerPasses[playerNo] = true;
+            playerTurn = findNextPlayer();    
+        }
+    };
+    
+    handleTurn(playerNo, playedCards) {
+        if (!isPlayerTurn(playerNo)) return false;
+    
+        if (!doesHandContainsCards(playerHands[playerNo], playedCards)) return false;
+    
+        if (getHandType(playedCards) == HandType.Invalid) return false;
+    
+        if (Board.length == 0 && !(playedCards.includes("3d"))) return false;
+    
+        if (!isNewRound && !isStronger(Board[Board.length - 1], playedCards)) return false;
+    
+        Board.push(playedCards);
+        removeCardsFromHand(playerHands[playerNo], playedCards);
+        playerTurn = findNextPlayer(playerPasses, playerTurn);
+        isNewRound = false;
+    }
+    
+    getStartingPlayer() {
+        for (let i = 0; i < 4; i++) {
+            if (playerHands[i].has("3d")) {
+                return i;
+            }
+        }
+    }
+    
+    getHandLengths() {
+        var handLengths = playerHands.map((x) => x.size);
+        return handLengths;
+    }
+    
+    doesHandContainsCards(hand, playedCards) {
+        playedCards.forEach((card) => {
+            if (!(hand.has(card))) {
+                return false;
+            }
+        });
+        return true;
+    }
+
+}
+
+
 
 export const HandType = Object.freeze({
     "Invalid" : 1,
@@ -119,7 +257,7 @@ export function isFourOfAKind(hand) {
 };
 
 export function areEqual() {
-  var len = arguments.length;
+  this.len = arguments.length;
   for (var i = 1; i< len; i++){
       if (arguments[i] === null || arguments[i] !== arguments[i-1])
           return false;
@@ -329,68 +467,7 @@ export function evaluateHand(hand) {
     } 
 }
 
-function isGameOver() {
-    for (let hand of playerHands) {
-        if (hand.size == 0) {
-            console.log("GAME OVER");
-            return true;
-        }
-    }
-    return false;
-}
 
-function findNextPlayer() {
-    for (var i = 0; i < playerPasses.length; i++) {
-        let index = (playerTurn + 1 + i) % 4;
-        if (playerPasses[index] == false) {
-            return index;
-        }
-    }
-    return playerTurn;
-}
-
-function logState() {
-    console.log("Start Logging State");
-    console.log("hands : ");
-    for (var i = 0; i < playerHands.length; i++) {
-        console.log("hand " + i + " | count : " + playerHands[i].size);
-        console.log(playerHands[i].entries());
-    }
-    console.log("playerTurn : "  + playerTurn);
-    console.log("newRound : "  + isNewRound);
-    console.log("play : "  + Board);
-    console.log("playerPasses : "  + playerPasses);
-    console.log("gameEnd : " + isGameOver())
-    console.log("End Logging State");
-}
-
-function resetRound() {
-    isNewRound = true;
-    playerPasses = [false, false, false, false];
-    Board.push([]);
-}
-
-function isRoundComplete() {
-    if (playerPasses.filter((x) => x != false).length >= 3) return true;
-    return false;
-}
-
-function handlePass(playerNo) {
-    if (isNewRound) return;
-    if (playerNo == playerTurn) {
-        playerPasses[playerNo] = true;
-        playerTurn = findNextPlayer();    
-    }
-};
-
-function doesHandContainsCards(hand, playedCards) {
-    playedCards.forEach((card) => {
-        if (!(hand.has(card))) {
-            return false;
-        }
-    });
-    return true;
-}
 
 function isPlayerTurn(playerNo) {
     if (playerNo == playerTurn) return true;
@@ -403,73 +480,7 @@ function removeCardsFromHand(hand, playedCards) {
     })
 }
 
-function handleTurn(playerNo, playedCards) {
-    if (!isPlayerTurn(playerNo)) return false;
 
-    if (!doesHandContainsCards(playerHands[playerNo], playedCards)) return false;
-
-    if (getHandType(playedCards) == HandType.Invalid) return false;
-
-    if (Board.length == 0 && !(playedCards.includes("3d"))) return false;
-
-    if (!isNewRound && !isStronger(Board[Board.length - 1], playedCards)) return false;
-
-    Board.push(playedCards);
-    removeCardsFromHand(playerHands[playerNo], playedCards);
-    playerTurn = findNextPlayer(playerPasses, playerTurn);
-    isNewRound = false;
-}
-
-function getStartingPlayer() {
-    for (let i = 0; i < 4; i++) {
-        if (playerHands[i].has("3d")) {
-            return i;
-        }
-    }
-}
-
-function DealDeck(Deck, tempHands) {
-    var dealPlayer = 0;
-    var tempHand0 = new Map();
-    var tempHand1 = new Map();
-    var tempHand2 = new Map();
-    var tempHand3 = new Map();
-    while (Array.from(Deck.keys()).length > 0) {
-        let card = DealCard(Deck);
-        dealPlayer = dealPlayer % 4;
-        if (dealPlayer == 0) {
-            tempHand0.set(card, 0);
-        } else if (dealPlayer == 1) {
-            tempHand1.set(card, 0);
-        } else if (dealPlayer == 2) {
-            tempHand2.set(card, 0);
-        } else if (dealPlayer == 3) {
-            tempHand3.set(card, 0);
-        }
-
-        dealPlayer += 1;
-    }
-    tempHands.push((tempHand0));
-    tempHands.push((tempHand1));
-    tempHands.push((tempHand2));
-    tempHands.push((tempHand3));
-    // return tempHands;
-}
-
-function DealCard(Deck) {
-    let Cards = Array.from(Deck.keys())
-    var randomNumber = Math.round((Math.random() * (Cards.length-1)))
-    let Card = Cards[randomNumber]
-    var currentDeck = Deck;
-    currentDeck.delete(Card);
-    Deck = currentDeck;
-    return Card;
-}
-
-function getHandLengths() {
-    var handLengths = playerHands.map((x) => x.size);
-    return handLengths;
-}
 
 function sendSocketGameState(socket, playerID) {
     if (!socket) return;
@@ -541,96 +552,5 @@ var deck = new Map([
     ["Ks", null]
 ]);
 
-var Board = [[]];
-// TODO: turn this into map to track hands with playerID
-var playerHands = new Array();
-var userIdToPlayerNo = new Map();
-var isNewRound = true;
-var playerPasses = [false, false, false, false];
-DealDeck(deck, playerHands);
-var playerTurn = getStartingPlayer();
-
-console.log(playerHands);
 
 
-// EXPRESSSS
-const app = express();
-app.use(cors());
-app.use(bodyParser.json())
-const port = process.env.PORT || 8085;
-
-const wss = new WebSocketServer({ noServer: true })
-
-const server = app.listen(port, '0.0.0.0', () => {
-    console.log(`App listening on port ${port}`)
-})
-
-server.on('upgrade', (request, socket, head) => {
-    wss.handleUpgrade(request, socket, head, socket => {
-        wss.emit('connection', socket, request)
-    })
-})
-
-
-wss.on('connection', socket => {
-    
-    console.log("no clients: "  + wss.clients.size);
-    socket.on('error', err => console.error('Websocket error:', err))
-
-    socket.on('message', message => {
-        console.log(message);
-        const data = JSON.parse(Buffer.from(message).toString());
-        console.log(data);
-        socket.userData = { userId: data.message};
-        console.log("userIDtoPlayerNo Size: " + userIdToPlayerNo.size);
-        if (userIdToPlayerNo.has(data.message)) {
-            sendSocketGameState(socket, data.message);
-        }
-        
-        if (userIdToPlayerNo.size < 4) {
-            console.log("entered")
-            userIdToPlayerNo.set(data.message, userIdToPlayerNo.size);
-            sendSocketGameState(socket, socket.userData.userId);
-
-        } else {
-            console.log("too many players");
-        }
-    })  
-
-    socket.on('close', function close() {
-        console.log("Websocket closed");
-      });
-})
-
-app.get('/hands', (req, res) => {
-    res.send({"hand0" :  [...playerHands[0]], "hand1" : [...playerHands[1]], "hand2" : [...playerHands[2]], "hand3" : [...playerHands[3]]});
-});
-
-app.post('/turn', (req, res) => {
-    console.log("request")
-    if (isGameOver()) return;
-
-    if (req.body.hand.length == 0) {
-        console.log("Pass")
-        handlePass(req.body.playerNo);
-    } else {
-        console.log("play turn")
-        handleTurn(req.body.playerNo, req.body.hand);
-    }
-
-    if (isRoundComplete()) {
-        console.log("NEW ROUND");
-        resetRound();
-    }
-    
-    logState();
-
-    console.log("SEND GAME STATE");
-    wss.clients.forEach(client => {
-        sendSocketGameState(client, client.userData.userId);
-    })
-
-
-    console.log("done")
-    res.send('POST request to the homepage');
-});
