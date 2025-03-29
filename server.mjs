@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import WebSocket, { WebSocketServer } from 'ws';
-import Game from "./game.js";
+import Game from "./game.ts";
 
 var game = new Game();
 
