@@ -606,6 +606,11 @@ app.get('/hands', (req, res) => {
     res.send({"hand0" :  [...playerHands[0]], "hand1" : [...playerHands[1]], "hand2" : [...playerHands[2]], "hand3" : [...playerHands[3]]});
 });
 
+app.post('/game/1', (req, res) => {
+    console.log("name submit");
+    res.send("nice");
+})
+
 app.post('/turn', (req, res) => {
     console.log("request")
     if (isGameOver()) return;

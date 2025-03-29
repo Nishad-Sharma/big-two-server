@@ -1,14 +1,16 @@
-export function LoginForm(PlayerID, SetPlayerID, handleSubmit) {
+import { useState } from "react";
+
+export const LoginForm = ({handleSubmit}) => {
+    const [data, setData] = useState("");
+
+    const handleChange = (event) => {
+        setData(event.target.value);
+    };
+
     return (
-        <form>
-            <label>Enter your name:
-                <input
-                    type="text"
-                    value={PlayerID}
-                    onChange={(e) => SetPlayerID(e.target.value)}
-                />
-                <button onClick={handleSubmit}>Submit</button>
-            </label>
-        </form>
-    )
+        <div className="App">
+          <input type="text" value={data} onChange={handleChange} />
+          <button onClick={() => handleSubmit(data)}>Submit</button>
+        </div>
+      );
 }
