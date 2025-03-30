@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { LoginForm } from "./LoginForm";
 
+export const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
+export const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
+
 const HighCardRanking = Object.freeze({
   "3d" : 1,
   "3c" : 2,
@@ -259,11 +262,30 @@ export default function Game() {
     const [playerPasses, setPlayerPasses] = useState(new Array(false, false, false, false));
     const [handLengths, setHandLengths] = useState(new Array(0, 0, 0, 0));
     const [playerID, setPlayerID] = useState("");
-    const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
-    const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
+    const gameID = 1;
+
+    function handleplayerIDSubmit(pID) {
+        const url = baseURL + "/game/" + gameID;
+        const payload = {playerID: pID, gameID: gameID};
+        console.log("response")
+        fetch(url, {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            if (data == "player registered") {
+                setPlayerID(pID)
+            }
+        })
+    }
 
     console.log(baseURL);
-    
+   
     function sortHand(hand) {
         if (areArraysEqual(Array.from(sortHandByRank(hand).keys()), Array.from(hand.keys()))) {
             setHand(sortHandBySuit(hand));
@@ -282,7 +304,7 @@ export default function Game() {
         })
 
         const url = baseURL + "/turn";
-        const payload = {playerNo: playerId, hand: turnArray};
+        const payload = {playerNo: playerID, hand: turnArray};
         if (isPass) payload['hand'] = []
 
         const response = fetch(url, {
@@ -311,7 +333,7 @@ export default function Game() {
         console.log("HANDLING DATA");
         const parsedData = JSON.parse(data);
         setPlayerTurn(parsedData.playerTurn);
-        setHandLengths(parsedData.handLengths);
+        // setHandLengths(parsedData.handLengths);
         setHand(new Map(parsedData.hand));
         setPlayerPasses(parsedData.playerPasses);
         setPlay(parsedData.play);
@@ -319,12 +341,15 @@ export default function Game() {
 
     useEffect(
         () => {
+            if (playerID == "") {
+                return;
+            }
             const socket = new WebSocket(websocketURL);
 
             // Handle connection open
             socket.onopen = () => {
                 console.log('WebSocket connection established');
-                socket.send(JSON.stringify({ type: 'clientHello', message: playerId }))
+                socket.send(JSON.stringify({ type: 'initSocket', message: {pID : playerID, gID : gameID} }))
                 // Perform any necessary actions when the connection is open
             };
 
@@ -338,15 +363,20 @@ export default function Game() {
             return () => {
                 socket.close();
             }
+            
         },
-        [playerNo]
+        //this will be removed eventually since playerId wont change
+        [playerID]
     )
 
 
 
     var playerLengths = new Map();
     for (var i = 0; i < handLengths.length - 1; i++) {
-        let index = (playerNo + 1 + i) % 4;
+        // let index = (playerNo + 1 + i) % 4;
+        // TODO ^ : PlayerNo has been removed, this function is broken needs to be fixed
+        let index = (1 + 1 + i) % 4;
+        
         playerLengths.set(index, handLengths[index]);
     } 
 
@@ -355,29 +385,41 @@ export default function Game() {
         OpponentHands.push(<div key={key}><OpponentHand name={"Player " + key} handLength={value} currentPlayer={playerTurn} playerPasses={playerPasses}/><br/></div>);
     })  
 
-    return (
-        <div>
-        <div>
-            {/* <button onClick={() => http(playerTurn)}>
-                HTTP
-            </button> */}
-            <LoginForm PlayerID={PlayerID} onPlayerIDTextChange={setPlayerID}></LoginForm>
-            <button onClick={() => sendTurn(false)}>
-                Play
-            </button>
-            <button onClick={() => sendTurn(true)}>
-                Pass
-            </button>
-            <button onClick={() => sortHand(hand)}>
-                Sort
-            </button>
-            <br/>
-            {OpponentHands}
-            <Hand hand={hand} Fn={SelectCard} name={playerID} currentPlayer={playerTurn} className="hand"/>
-            <br/>
-            <br/>
-            <Play hand={play} name="Play"/>
-        </div>
-        </div>
-    );
+    console.log("playerID: " + playerID);
+
+    if (playerID == "") {
+        return (
+            <div>
+                <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
+            </div>
+        )
+    } else {
+        return (
+            <div>
+            <div>
+                {/* <button onClick={() => http(playerTurn)}>
+                    HTTP
+                </button> */}
+                {/* <LoginForm PlayerID={PlayerID} onPlayerIDTextChange={setPlayerID}></LoginForm> */}
+                <button onClick={() => sendTurn(false)}>
+                    Play
+                </button>
+                <button onClick={() => sendTurn(true)}>
+                    Pass
+                </button>
+                <button onClick={() => sortHand(hand)}>
+                    Sort
+                </button>
+                <br/>
+                {OpponentHands}
+                <Hand hand={hand} Fn={SelectCard} name={playerID} currentPlayer={playerTurn} className="hand"/>
+                <br/>
+                <br/>
+                <Play hand={play} name="Play"/>
+            </div>
+            </div>
+        );
+    }
+
+    
 }

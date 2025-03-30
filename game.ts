@@ -17,6 +17,27 @@ export default class Game {
         this.status = GameStatus.Lobby;
     }
 
+    isExistingPlayer(playerID: string) {
+        var player = this.players.find((player) => player.id == playerID); // is this reference? or copy check
+        if (player) return true;
+        return false;
+    }
+
+    addPlayer(playerID: string) {
+        if (this.players.length >= 4) return false;
+        
+        if (this.isExistingPlayer(playerID)) {
+            console.log("Player already exists")
+            return false;
+        }
+
+        var newPlayer = new Player(playerID);
+        this.players.push(newPlayer);
+        console.log("game id: " + this.id);
+        console.log("players: " + this.players);
+        return true;
+    }
+
     deal() {
         if (this.status != GameStatus.Lobby) return;
         var deck = new Deck();
