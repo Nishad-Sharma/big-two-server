@@ -7,8 +7,8 @@ export default class GameRegistry {
         this.games = []; // maybe should be map to easily access gameid
     }
 
-    createGame() {
-        var game = new Game("1"); // GameID will probably be a random generated string later and you check if string already exists?
+    createGame(id: string) {
+        var game = new Game(id); // GameID will probably be a random generated string later and you check if string already exists?
         this.games.push(game);
         console.log("Creating game");
         console.log(this.games);
