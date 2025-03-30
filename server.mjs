@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { WebSocketServer } from 'ws';
 import GameRegistry from "./gameRegistry.ts";
+import { STATUS_CODES } from "http";
 
 let app = express();
 app.use(cors());
@@ -38,6 +39,20 @@ app.post('/game/1', (req, res) => {
         }
     }
 
+})
+
+app.post('/game/1/turn', (req, res) => {
+    var game = registry.getGame(req.body.gameID);
+    let id = req.body.playerID;
+    let cards = req.body.cards;
+
+    if (game.executeTurn(id, cards)) {
+        res.statusCode = 200;
+        res.send("executed turn");
+    } else {
+        res.statusCode = 500;
+        res.send("turn failed to execute");
+    }
 })
 
 wss.on('connection', socket => {
