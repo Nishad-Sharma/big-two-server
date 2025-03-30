@@ -1,4 +1,4 @@
-import GameServer from "./gameServer.js";
+import GameServer from "./gameServer.ts";
 
 var gameServer = new GameServer();
 gameServer.createGame();

@@ -25,16 +25,11 @@ export default class Game {
 
     addPlayer(playerID: string) {
         if (this.players.length >= 4) return false;
-        
-        if (this.isExistingPlayer(playerID)) {
-            console.log("Player already exists")
-            return false;
-        }
-
         var newPlayer = new Player(playerID);
         this.players.push(newPlayer);
-        console.log("game id: " + this.id);
-        console.log("players: " + this.players);
+        if (this.players.length == 4) {
+            this.deal();
+        }
         return true;
     }
 
@@ -49,7 +44,9 @@ export default class Game {
             this.players.forEach(p => p.giveCard(deck.dealCard()));
         }
         this.players.forEach(player => {
-            if (player.has3D()) player.status == PlayerStatus.Turn;
+            if (player.has3d()) {
+                player.status = PlayerStatus.Turn;
+            }
         })
         this.status = GameStatus.Playing;
         return true;
@@ -57,12 +54,13 @@ export default class Game {
 
     getGameStateForPlayer(id: string) {
         let players = this.players.map(p => {
-            if (p.id = id) {
-                return p
+            if (p.id == id) {
+                return p;
             } else {
                 return p.toHidden();
             }
         })
+
         return {
             "board" : this.board,
             "players": players,

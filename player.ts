@@ -17,8 +17,8 @@ export default class Player {
         return this.hand;
     }
 
-    has3D(): boolean {
-        return this.hand.includes("3D");
+    has3d(): boolean {
+        return this.hand.includes("3d");
     }
 
     hasCards(cards: string[]): boolean {
