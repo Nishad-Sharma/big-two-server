@@ -267,23 +267,22 @@ export default function Game() {
     function handleplayerIDSubmit(pID) {
         const url = baseURL + "/game/" + gameID;
         const payload = {playerID: pID, gameID: gameID};
-
-        const response = fetch(url, {
+        console.log("response")
+        fetch(url, {
             method : "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(payload)
         })
-
-        // TODO: change this to check response properly
-        if (!response) {
-            console.log("error")
-            return false;
-        }
-        setPlayerID(pID);
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            if (data == "player registered") {
+                setPlayerID(pID)
+            }
+        })
     }
-
 
     console.log(baseURL);
    
@@ -350,7 +349,7 @@ export default function Game() {
             // Handle connection open
             socket.onopen = () => {
                 console.log('WebSocket connection established');
-                socket.send(JSON.stringify({ type: 'clientHello', message: playerID }))
+                socket.send(JSON.stringify({ type: 'initSocket', message: {pID : playerID, gID : gameID} }))
                 // Perform any necessary actions when the connection is open
             };
 
@@ -366,6 +365,7 @@ export default function Game() {
             }
             
         },
+        //this will be removed eventually since playerId wont change
         [playerID]
     )
 
