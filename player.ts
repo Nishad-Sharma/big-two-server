@@ -3,10 +3,10 @@ export default class Player {
     id: string;
     status: PlayerStatus;
 
-    constructor(id: string, status: PlayerStatus) {
+    constructor(id: string) {
         this.hand = [];
         this.id = id;
-        this.status = status;
+        this.status = PlayerStatus.Waiting;
     }
 
     setHand(hand: string[]) {
@@ -22,6 +22,11 @@ export default class Player {
     }
 
     hasCards(cards: string[]): boolean {
+        cards.forEach((card) => {
+            if (!(this.hand.includes(card))) {
+                return false;
+            }
+        });
         return true;
     }
 
@@ -62,9 +67,3 @@ export enum PlayerStatus {
     Waiting = "waiting",
     Turn =  "turn",
 }
-
-// export enum PlayerStatus {
-//     Passed,
-//     Waiting,
-//     Turn,
-// }

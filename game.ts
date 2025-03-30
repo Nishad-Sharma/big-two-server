@@ -27,6 +27,9 @@ export default class Game {
         while (deck.undealtCardsRemaining() > 0) {
             this.players.forEach(p => p.giveCard(deck.dealCard()));
         }
+        this.players.forEach(player => {
+            if (player.has3D()) player.status == PlayerStatus.Turn;
+        })
         this.status = GameStatus.Playing;
         return true;
     }
@@ -63,7 +66,7 @@ export default class Game {
         } else {
             if (!player.hasCards(cards)) return false;
             if (getHandType(cards) == HandType.Invalid) return false;
-            if (!isStronger(this.board, cards)) return false;
+            if (!this.isNewRound && !isStronger(this.board, cards)) return false;
 
             player.status = PlayerStatus.Waiting;
             player.removeCards(cards);
@@ -81,9 +84,6 @@ export default class Game {
             this.players
                 .filter(p => p.status == PlayerStatus.Passed)
                 .forEach(p => p.status == PlayerStatus.Waiting)
-            this.players
-                .filter(p => p.status == PlayerStatus.Waiting)
-                .forEach(p => p.status == PlayerStatus.Turn)
             this.board = [];
         } else {
             var n;
@@ -107,8 +107,11 @@ export default class Game {
     private nextPlayer(player: Player): Player {
         var i = this.players.indexOf(player);
         if (i == -1) console.log("Could not find next player, invalid player: " + player.id);
-        if (i == 3) i = 0;
-        return this.players[i + 1];
+        if (i == 3) {
+            return this.players[0];
+        } else {
+            return this.players[i + 1];
+        }
     }
 
     private isRoundComplete() {
