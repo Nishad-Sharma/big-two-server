@@ -15,6 +15,7 @@
     "@types/node": "^22.13.14"
   },
   "scripts": {
-    "dev": "node --experimental-strip-types --experimental-transform-types server.mjs"
+    "dev": "node --experimental-strip-types --experimental-transform-types server.mjs",
+    "build": "tsc"
   }
 }
