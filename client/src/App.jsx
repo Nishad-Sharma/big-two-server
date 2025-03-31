@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
@@ -119,29 +119,47 @@ function areArraysEqual(a, b) {
     return true;
 }
 
-function getSelectableArray(playerHandArray) {
-    var parsedHand = [];
-    playerHandArray.forEach(card => {
-        parsedHand.push([card, 0]);
-    })
-    return parsedHand;
+function isSelectable(playerHand) {
+    if (typeof (playerHand[0][0]) === 'undefined') return false;
+    return true;
 }
 
 export default function Game() {
     const [hand, setHand] = useState(new Map());
-    const [play, setPlay] = useState(new Array());
-    const [playerTurn, setPlayerTurn] = useState(0);
-    //this probs doesnt have to be state
-    // const [playerNo, setPlayerNo] = useState(Number(window.location.pathname.substring(1)));
-    const [playerPasses, setPlayerPasses] = useState(new Array(false, false, false, false));
-    const [handLengths, setHandLengths] = useState(new Array(0, 0, 0, 0));
+
     const [playerID, setPlayerID] = useState("");
     const gameID = 1;
-
     const [board, setBoard] = useState(new Array());
     const [players, setPlayers] = useState(new Array());
     const [gameStatus, setGameStatus] = useState(GameStatus.Lobby);
     const [sort, setSort] = useState(0);
+
+    const prevPlayers = useRef(null);
+
+    useEffect(
+        () => {
+            prevPlayers.current = players;
+        },
+        [players]
+    );
+
+    function updateSelectableArray(newHand, prevHand) {
+        var parsedHand = [];
+        prevHand.forEach(card => {
+            if (newHand.includes(card[0])) {
+                parsedHand.push(card);
+            }
+        })
+        return parsedHand;
+    }
+
+    function getSelectableArray(newHand) {
+        var parsedHand = [];
+        newHand.forEach(card => {
+            parsedHand.push([card, 0]);
+        })
+        return parsedHand;
+    }
 
     function handleplayerIDSubmit(pID) {
         const url = baseURL + "/game/" + gameID;
@@ -230,14 +248,27 @@ export default function Game() {
         return -1;
     }
 
+    function handlePlayerData(playerData) {
+        var player = playerData.find(p => Array.isArray(p.hand));
+        const position = getSelfArrayPosition(playerData);
+
+        if (player.hand.length > 0) {
+            if ((prevPlayers.current.length == 0) || (prevPlayers.current[position].hand.length == 0)) {
+                playerData[position].hand = getSelectableArray(playerData[position].hand);
+            } else {
+                const prevHand = prevPlayers.current[position].hand;
+                playerData[position].hand = updateSelectableArray(playerData[position].hand, prevHand);
+            }
+        }
+        return playerData;
+    }
+
     function handleServerMessage(data) {
         const parsedData = JSON.parse(data);
+        const handledPlayerData = handlePlayerData(parsedData.players);
         setBoard(parsedData.board);
-        var tempPlayers = parsedData.players;
-        const position = getSelfArrayPosition(tempPlayers);
-        tempPlayers[position].hand = getSelectableArray(tempPlayers[position].hand);
-        setPlayers(tempPlayers);
-        setGameStatus(parsedData.gameStatus);
+        setPlayers(handledPlayerData);
+        setGameStatus(parsedData.status);
     }
 
     useEffect(
@@ -256,7 +287,7 @@ export default function Game() {
 
             socket.onmessage = (event) => {
                 console.log(`Received message: ${event.data}`);
-                handleServerMessage(event.data)
+                handleServerMessage(event.data);
                 // Handle the received message as required
             };
 
@@ -265,7 +296,6 @@ export default function Game() {
             }
 
         },
-        //this will be removed eventually since playerId wont change
         [playerID]
     )
 
