@@ -1,6 +1,6 @@
 import Player, { PlayerStatus } from "./player.ts";
 import Deck from "./deck.ts";
-import {HandType, getHandType, isStronger} from "./evaluation.ts";
+import { HandType, getHandType, isStronger } from "./evaluation.ts";
 
 export default class Game {
     id: string;
@@ -62,7 +62,7 @@ export default class Game {
         })
 
         return {
-            "board" : this.board,
+            "board": this.board,
             "players": players,
             "isNewRound": this.isNewRound,
             "status": this.status,
@@ -77,9 +77,8 @@ export default class Game {
 
         if (player.status != PlayerStatus.Turn) return false;
 
-        if (cards.length == 0) {  
+        if (cards.length == 0) {
             if (this.isNewRound) return false;
-
             player.status = PlayerStatus.Passed;
 
         } else {
@@ -88,6 +87,7 @@ export default class Game {
             if (!this.isNewRound && !isStronger(this.board, cards)) return false;
 
             player.status = PlayerStatus.Waiting;
+            this.isNewRound = false;
             player.removeCards(cards);
             this.board = cards;
         }
@@ -96,13 +96,20 @@ export default class Game {
             this.status = GameStatus.Complete;
             console.log("GAME OVER");
             return true;
-        } 
+        }
 
         if (this.isRoundComplete()) {
             this.isNewRound = true;
-            this.players
-                .filter(p => p.status == PlayerStatus.Passed)
-                .forEach(p => p.status == PlayerStatus.Waiting)
+            this.players.forEach((player, index) => {
+                if (player.status == PlayerStatus.Waiting) {
+                    this.players[index].status = PlayerStatus.Turn;
+                } else if (player.status == PlayerStatus.Passed) {
+                    this.players[index].status = PlayerStatus.Waiting;
+                } else {
+                    console.log("ERROR: invalid player status: ");
+                    console.log(player);
+                }
+            })
             this.board = [];
         } else {
             var n;
@@ -114,10 +121,10 @@ export default class Game {
                 }
             }
         }
-   
+
         return true;
     }
-    
+
     //todo: figure out error/return type
     private getPlayer(id: string): Player | undefined {
         return this.players.find(p => p.id == id);

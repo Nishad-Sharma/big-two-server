@@ -45,9 +45,10 @@ app.post('/game/1', (req, res) => {
 app.post('/game/1/turn', (req, res) => {
     var game = registry.getGame(req.body.gameID);
     let id = req.body.playerID;
-    let cards = req.body.cards;
+    let hand = req.body.hand;
 
-    if (game.executeTurn(id, cards)) {
+
+    if (game.executeTurn(id, hand)) {
         res.statusCode = 200;
         sendSocketGameState(wss, req.body.gameID);
         res.send("executed turn");

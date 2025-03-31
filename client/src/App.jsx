@@ -144,7 +144,6 @@ export default function Game() {
     const [sort, setSort] = useState(0);
 
     function handleplayerIDSubmit(pID) {
-        console.log("yeah");
         const url = baseURL + "/game/" + gameID;
         const payload = { playerID: pID, gameID: gameID };
         fetch(url, {
@@ -156,7 +155,6 @@ export default function Game() {
         })
             .then(response => response.text())
             .then(data => {
-                console.log(data);
                 if (data == "player registered") {
                     setPlayerID(pID)
                 }
@@ -174,19 +172,21 @@ export default function Game() {
         }
     }
 
-    // TODO: fix, currently broken
     function sendTurn(isPass) {
+        var hand = getPlayer().hand;
+        if (getPlayer().status != "turn") return;
         if (CountSelected(hand) == 0 && !isPass) return;
+
         var turnArray = new Array();
-        hand.forEach((value, key) => {
-            if (value === 1) {
-                turnArray.push(key);
+        hand.forEach((card) => {
+            if (card[1] === 1) {
+                turnArray.push(card[0]);
             }
         })
 
-        const url = baseURL + "/turn";
-        const payload = { playerNo: playerID, hand: turnArray };
-        if (isPass) payload['hand'] = []
+        const url = baseURL + "/game/" + gameID + "/turn";
+        const payload = { playerID: playerID, gameID: gameID, hand: turnArray };
+        if (isPass) payload['hand'] = [];
 
         const response = fetch(url, {
             method: "POST",
@@ -195,7 +195,6 @@ export default function Game() {
             },
             body: JSON.stringify(payload)
         })
-
     }
 
     function getPlayer() {
@@ -276,7 +275,7 @@ export default function Game() {
                 <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
             </div>
         )
-    } else if (players.length < 4) {
+    } else if (players.length < 4) { // use GameSTatus???
         const connectedPlayers = [];
         players.forEach(player => {
             connectedPlayers.push(<div key={player.id}>{player.id}<br /></div>)
