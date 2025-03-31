@@ -3,25 +3,26 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { WebSocketServer } from 'ws';
 import GameRegistry from "./gameRegistry.ts";
-import { STATUS_CODES } from "http";
 
 let app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
 let port = process.env.PORT || 8085;
-let wss = new WebSocketServer({ noServer: true })
+let wss = new WebSocketServer({ noServer: true });
 
 var registry = new GameRegistry;
 
+registry.createGame("1");
+
 let server = app.listen(port, '0.0.0.0', () => {
-    console.log(`App listening on port ${port}`)
+    console.log(`App listening on port ${port}`);
 })
 
 server.on('upgrade', (request, socket, head) => {
-    console.log("Upgrade")
+    console.log("Upgrade");
     wss.handleUpgrade(request, socket, head, socket => {
-        wss.emit('connection', socket, request)
+        wss.emit('connection', socket, request);
     })
 })
 
@@ -48,6 +49,7 @@ app.post('/game/1/turn', (req, res) => {
 
     if (game.executeTurn(id, cards)) {
         res.statusCode = 200;
+        sendSocketGameState(wss, req.body.gameID);
         res.send("executed turn");
     } else {
         res.statusCode = 500;
@@ -63,7 +65,7 @@ wss.on('connection', socket => {
         const data = JSON.parse(Buffer.from(message).toString());
         console.log(data);
         socket.userData = { playerID: data.message.pID, gameID: data.message.gID };
-        sendSocketGameState(data.message.gID);
+        sendSocketGameState(wss, data.message.gID);
     })
 
     socket.on('close', function close() {
@@ -71,9 +73,9 @@ wss.on('connection', socket => {
     });
 })
 
- function sendSocketGameState(gameID) {
+function sendSocketGameState(wss, gameID) {
     var game = registry.getGame(gameID);
-    this.wss.clients.forEach(client => {
+    wss.clients.forEach(client => {
         if ((client.userData.gameID == gameID)) {
             var data = game?.getGameStateForPlayer(client.userData.playerID);
             client.send(JSON.stringify(data));

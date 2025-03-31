@@ -144,6 +144,7 @@ export default function Game() {
     const [sort, setSort] = useState(0);
 
     function handleplayerIDSubmit(pID) {
+        console.log("yeah");
         const url = baseURL + "/game/" + gameID;
         const payload = { playerID: pID, gameID: gameID };
         fetch(url, {
@@ -155,6 +156,7 @@ export default function Game() {
         })
             .then(response => response.text())
             .then(data => {
+                console.log(data);
                 if (data == "player registered") {
                     setPlayerID(pID)
                 }
