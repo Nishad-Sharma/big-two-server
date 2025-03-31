@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
+import { CreateGame } from './CreateGame';
 
 export const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
 export const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
@@ -303,6 +304,7 @@ export default function Game() {
         return (
             <div>
                 <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
+                <CreateGame></CreateGame>
             </div>
         )
     } else if (players.length < 4) { // use GameSTatus???

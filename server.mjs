@@ -13,7 +13,7 @@ let wss = new WebSocketServer({ noServer: true });
 
 var registry = new GameRegistry;
 
-registry.createGame("1");
+registry.createGameWithId("1");
 
 let server = app.listen(port, '0.0.0.0', () => {
     console.log(`App listening on port ${port}`);
@@ -53,6 +53,17 @@ app.post('/game/1/turn', (req, res) => {
     } else {
         res.statusCode = 500;
         res.send("turn failed to execute");
+    }
+})
+
+app.post('/game', (_, res) => {
+    let gameId = registry.createGame();
+    if (gameId.kind == "ok") {
+        res.statusCode = 200;
+        res.json({"gameId": gameId.value})
+    } else {
+        res.statusCode = 500;
+        res.json({"error": gameId.error})
     }
 })
 
