@@ -81,32 +81,18 @@ function CountSelected(hand) {
 
 // TODO: needs fixing
 function sortHandByRank(hand) {
-    const handArrays = Array.from(hand.keys());
-    const sortedHandArray = handArrays.sort((a, b) => {
-        return HighCardRanking[a] - HighCardRanking[b];
+    const sortedHand = hand.toSorted((a, b) => {
+        return HighCardRanking[a[0]] - HighCardRanking[b[0]];
     });
-
-    var sortedHandMap = new Map();
-    sortedHandArray.map((x) => {
-        sortedHandMap.set(x, hand.get(x));
-    })
-
-    return sortedHandMap;
+    return sortedHand
 };
 
 // TODO: needs fixing
 function sortHandBySuit(hand) {
-    const handArrays = Array.from(hand.keys());
-    const sortedHandArray = handArrays.sort((a, b) => {
-        return (HighCardRanking[a] + SuitValue[a.slice(-1)]) - (HighCardRanking[b] + SuitValue[b.slice(-1)]);
+    const sortedHand = hand.toSorted((a, b) => {
+        return (HighCardRanking[a[0]] + SuitValue[a[0].slice(-1)]) - (HighCardRanking[b[0]] + SuitValue[b[0].slice(-1)]);
     });
-
-    var sortedHandMap = new Map();
-    sortedHandArray.map((x) => {
-        sortedHandMap.set(x, hand.get(x));
-    })
-
-    return sortedHandMap;
+    return sortedHand;
 }
 
 function areArraysEqual(a, b) {
@@ -120,9 +106,22 @@ function areArraysEqual(a, b) {
     return true;
 }
 
-function isSelectable(playerHand) {
-    if (typeof (playerHand[0][0]) === 'undefined') return false;
-    return true;
+function updateSelectableArray(newHand, prevHand) {
+    var parsedHand = [];
+    prevHand.forEach(card => {
+        if (newHand.includes(card[0])) {
+            parsedHand.push(card);
+        }
+    })
+    return parsedHand;
+}
+
+function getSelectableArray(newHand) {
+    var parsedHand = [];
+    newHand.forEach(card => {
+        parsedHand.push([card, 0]);
+    })
+    return parsedHand;
 }
 
 export default function Game() {
@@ -134,8 +133,9 @@ export default function Game() {
     const [players, setPlayers] = useState(new Array());
     const [gameStatus, setGameStatus] = useState(GameStatus.Lobby);
     const [sort, setSort] = useState(0);
-
     const prevPlayers = useRef(null);
+    
+    console.log(baseURL);
 
     useEffect(
         () => {
@@ -143,24 +143,6 @@ export default function Game() {
         },
         [players]
     );
-
-    function updateSelectableArray(newHand, prevHand) {
-        var parsedHand = [];
-        prevHand.forEach(card => {
-            if (newHand.includes(card[0])) {
-                parsedHand.push(card);
-            }
-        })
-        return parsedHand;
-    }
-
-    function getSelectableArray(newHand) {
-        var parsedHand = [];
-        newHand.forEach(card => {
-            parsedHand.push([card, 0]);
-        })
-        return parsedHand;
-    }
 
     function handleplayerIDSubmit(pID) {
         const url = baseURL + "/game/" + gameID;
@@ -180,14 +162,20 @@ export default function Game() {
             })
     }
 
-    console.log(baseURL);
 
     // TODO: fix, currently broken
-    function sortHand(hand) {
-        if (areArraysEqual(Array.from(sortHandByRank(hand).keys()), Array.from(hand.keys()))) {
-            setHand(sortHandBySuit(hand));
+    function sortHand() {
+        var position = getSelfArrayPosition(players);
+        var currentPlayers = [...players];
+        
+        if (areArraysEqual(sortHandByRank(players[position].hand), players[position].hand)) {
+            const sortedHand = sortHandBySuit(players[position].hand);
+            currentPlayers[position].hand = sortedHand;
+            setHand(currentPlayers);
         } else {
-            setHand(sortHandByRank(hand));
+            const sortedHand = sortHandByRank(players[position].hand);
+            currentPlayers[position].hand = sortedHand;
+            setHand(currentPlayers);
         }
     }
 
@@ -338,7 +326,7 @@ export default function Game() {
                     <button onClick={() => sendTurn(true)}>
                         Pass
                     </button>
-                    <button onClick={() => sortHand(hand)}>
+                    <button onClick={() => sortHand()}>
                         Sort
                     </button>
                     <br />
