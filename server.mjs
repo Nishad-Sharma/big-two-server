@@ -39,14 +39,12 @@ app.post('/game/1', (req, res) => {
             res.send("player not registered");
         }
     }
-
 })
 
 app.post('/game/1/turn', (req, res) => {
     var game = registry.getGame(req.body.gameID);
     let id = req.body.playerID;
     let hand = req.body.hand;
-
 
     if (game.executeTurn(id, hand)) {
         res.statusCode = 200;
