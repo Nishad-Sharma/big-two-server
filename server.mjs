@@ -58,13 +58,13 @@ app.post('/game/1/turn', (req, res) => {
 
 app.post('/game', (_, res) => {
     let gameId = registry.createGame();
-    switch (gameId.kind) {
-        case "ok":
-            res.status(200).json({"gameId": gameId.value})
-        case "error":
-            res.status(500).json({"error": gameId.error})
+    if (gameId.kind == "ok") {
+        res.statusCode = 200;
+        res.json({"gameId": gameId.value})
+    } else {
+        res.statusCode = 500;
+        res.json({"error": gameId.error})
     }
-
 })
 
 wss.on('connection', socket => {
