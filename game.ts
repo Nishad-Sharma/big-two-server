@@ -23,6 +23,16 @@ export default class Game {
         return false;
     }
 
+    removePlayer(playerID: string) {
+        const player = this.getPlayer(playerID);
+        if (player) {
+            const index = this.players.indexOf(player);
+            this.players.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+
     addPlayer(playerID: string) {
         if (this.players.length >= 4) return false;
         var newPlayer = new Player(playerID);
@@ -155,7 +165,7 @@ export default class Game {
     }
 }
 
-enum GameStatus {
+export enum GameStatus {
     Lobby,
     Playing,
     Complete,
