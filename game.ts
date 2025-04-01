@@ -112,12 +112,13 @@ export default class Game {
             })
             this.board = [];
         } else {
-            var n;
+            var n = this.nextPlayer(player);
             for (let i = 0; i < this.players.length - 1; i++) {
-                n = this.nextPlayer(player);
                 if (n.status == PlayerStatus.Waiting) {
                     n.status = PlayerStatus.Turn
                     break;
+                } else {
+                    n = this.nextPlayer(n);
                 }
             }
         }
