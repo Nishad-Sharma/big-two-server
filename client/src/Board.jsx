@@ -7,7 +7,6 @@ export function Board({ hand, name }) {
 
     return (
         <div>
-            <br />
             <p>{name}</p>
             <div>{handArray}</div>
             <p></p>

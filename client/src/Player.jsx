@@ -22,7 +22,6 @@ export function Player({ id, hand, status, Fn }) {
 
     return (
         <div>
-            <br />
             <p style={{ color: PlayerStatusColor[status] }}>{id + " (" + handArray.length + ")"}</p>
             <div>
                 {handArray}

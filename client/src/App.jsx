@@ -79,7 +79,6 @@ function CountSelected(hand) {
     return Array.from(hand).filter((card) => card[1] == 1).length;
 };
 
-// TODO: needs fixing
 function sortHandByRank(hand) {
     const sortedHand = hand.toSorted((a, b) => {
         return HighCardRanking[a[0]] - HighCardRanking[b[0]];
@@ -87,7 +86,6 @@ function sortHandByRank(hand) {
     return sortedHand
 };
 
-// TODO: needs fixing
 function sortHandBySuit(hand) {
     const sortedHand = hand.toSorted((a, b) => {
         return (HighCardRanking[a[0]] + SuitValue[a[0].slice(-1)]) - (HighCardRanking[b[0]] + SuitValue[b[0].slice(-1)]);
@@ -125,8 +123,6 @@ function getSelectableArray(newHand) {
 }
 
 export default function Game() {
-    const [hand, setHand] = useState(new Map());
-
     const [playerID, setPlayerID] = useState("");
     const gameID = 1;
     const [board, setBoard] = useState(new Array());
@@ -134,7 +130,7 @@ export default function Game() {
     const [gameStatus, setGameStatus] = useState(GameStatus.Lobby);
     const [sort, setSort] = useState(0);
     const prevPlayers = useRef(null);
-    
+
     console.log(baseURL);
 
     useEffect(
@@ -145,6 +141,7 @@ export default function Game() {
     );
 
     function handleplayerIDSubmit(pID) {
+        if (pID == "") return;
         const url = baseURL + "/game/" + gameID;
         const payload = { playerID: pID, gameID: gameID };
         fetch(url, {
@@ -162,20 +159,18 @@ export default function Game() {
             })
     }
 
-
-    // TODO: fix, currently broken
     function sortHand() {
         var position = getSelfArrayPosition(players);
         var currentPlayers = [...players];
-        
+
         if (areArraysEqual(sortHandByRank(players[position].hand), players[position].hand)) {
             const sortedHand = sortHandBySuit(players[position].hand);
             currentPlayers[position].hand = sortedHand;
-            setHand(currentPlayers);
+            setPlayers(currentPlayers);
         } else {
             const sortedHand = sortHandByRank(players[position].hand);
             currentPlayers[position].hand = sortedHand;
-            setHand(currentPlayers);
+            setPlayers(currentPlayers);
         }
     }
 
@@ -314,7 +309,7 @@ export default function Game() {
 
         for (var i = 0; i < players.length; i++) {
             const player = players[(i + position + 1) % players.length];
-            connectedPlayers.push(<div key={player.id}><Player id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} /><br /></div>)
+            connectedPlayers.push(<div key={player.id}><Player id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} /></div>)
         }
 
         return (
@@ -331,8 +326,6 @@ export default function Game() {
                     </button>
                     <br />
                     {connectedPlayers}
-                    <br />
-                    <br />
                     <Board hand={board} name="Board" />
                 </div>
             </div>
