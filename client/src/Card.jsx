@@ -7,15 +7,23 @@ const cardPaths = cards
         return images
     }, {})
 
-export function Card({ value, selected = 0, Fn = () => void 0 }) {
+export function Card({ value, selected = 0, Fn = () => void 0, index, board=false }) {
     const cardSrc = cardPaths[value];
+    const offset = (index * 40) + "px";
     if (selected === 1) {
         return (
-            <img onClick={() => Fn({ value })} src={cardSrc} className="selected_card_svg"/>
+            <img onClick={() => Fn({ value })} src={cardSrc} className="selected_card_svg" style={{right: offset}}/>
         );
     } else {
-        return (
-            <img onClick={() => Fn({ value })} src={cardSrc} className="card_svg"/>
-        );
+        if (board) {
+            return (
+                <img onClick={() => Fn({ value })} src={cardSrc} className="board_card_svg" />
+            );
+        } else {
+            return (
+                <img onClick={() => Fn({ value })} src={cardSrc} className="card_svg" style={{right: offset}} />
+            );
+        }
+        
     }
 }

@@ -1,5 +1,5 @@
-import { Card } from "./Card"
-import { CardBack } from "./CardBack"
+import { Card } from "./Card";
+import { CardBack } from "./CardBack";
 
 const PlayerStatusColor = Object.freeze({
     "passed": 'grey',
@@ -10,8 +10,8 @@ const PlayerStatusColor = Object.freeze({
 export function Player({ id, hand, status, Fn }) {
     var handArray;
     if (Array.isArray(hand)) {
-        handArray = hand.map(card =>
-            <Card key={card} value={card[0]} selected={card[1]} Fn={Fn} />
+        handArray = hand.map((card, index )=>
+            <Card key={card} value={card[0]} selected={card[1]} Fn={Fn} index={index} />
         );
     } else if (Number.isInteger(hand)) {
         let intArray = [...Array(hand).keys()]
@@ -23,7 +23,7 @@ export function Player({ id, hand, status, Fn }) {
     return (
         <div>
             <p style={{ color: PlayerStatusColor[status] }}>{id + " (" + handArray.length + ")"}</p>
-            <div>
+            <div className="hand">
                 {handArray}
             </div>
             <p></p>

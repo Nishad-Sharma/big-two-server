@@ -86,6 +86,12 @@
     width: 46px;
   }
 
+  .board_card_svg {
+    padding: 0.5px;
+    height: 106px;
+    width: 72px;
+  }
+
   .card_back_svg {
     padding: 0.5px;
     height: 106px;
@@ -94,6 +100,10 @@
 
   .card_svg {
     /* background: #fff3d1; */
+    /* display: inline-block;  */
+    position: relative;
+    /* left: 10px; */
+    offset: 20px;
     padding: 0.5px;
     height: 106px;
     width: 72px;
@@ -120,6 +130,10 @@
     padding: 0;
     text-align: center;
     width: 23px;
+  }
+
+  .hand {
+    position: relative;
   }
   
   p span {
