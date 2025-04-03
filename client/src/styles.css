@@ -1,62 +1,62 @@
 * {
     box-sizing: border-box;
-  }
-  
-  body {
+}
+
+body {
     font-family: sans-serif;
     margin: 20px;
     padding: 0;
-  }
-  
-  h1 {
+}
+
+h1 {
     margin-top: 0;
     font-size: 22px;
-  }
-  
-  h2 {
+}
+
+h2 {
     margin-top: 0;
     font-size: 20px;
-  }
-  
-  h3 {
+}
+
+h3 {
     margin-top: 0;
     font-size: 18px;
-  }
-  
-  h4 {
+}
+
+h4 {
     margin-top: 0;
     font-size: 16px;
-  }
-  
-  h5 {
+}
+
+h5 {
     margin-top: 0;
     font-size: 14px;
-  }
-  
-  h6 {
+}
+
+h6 {
     margin-top: 0;
     font-size: 12px;
-  }
-  
-  code {
+}
+
+code {
     font-size: 1.2em;
-  }
-  
-  ul {
+}
+
+ul {
     padding-inline-start: 20px;
-  }
-  
-  * {
+}
+
+* {
     box-sizing: border-box;
-  }
-  
-  body {
+}
+
+body {
     font-family: sans-serif;
     margin: 20px;
     padding: 0;
-  }
-  
-  .square {
+}
+
+.square {
     background: #fff;
     border: 1px solid #999;
     float: left;
@@ -69,9 +69,9 @@
     padding: 0;
     text-align: center;
     width: 34px;
-  }
-  
-  .card {
+}
+
+.card {
     background: #fff;
     border: 1px solid #999;
     float: left;
@@ -84,40 +84,37 @@
     padding: 0;
     text-align: center;
     width: 46px;
-  }
+}
 
-  .board_card_svg {
+.board_card_svg {
     padding: 0.5px;
     height: 106px;
     width: 72px;
-  }
+}
 
-  .card_back_svg {
+.card_back_svg {
     padding: 0.5px;
     height: 106px;
     width: 72px;
-  }
+}
 
-  .card_svg {
-    /* background: #fff3d1; */
-    /* display: inline-block;  */
+.card_svg {
     position: relative;
-    /* left: 10px; */
     offset: 20px;
     padding: 0.5px;
     height: 106px;
     width: 72px;
-  }
+}
 
-  .selected_card_svg {
+.selected_card_svg {
     position: relative;
     bottom: 20px;
     padding: 0.5px;
     height: 106px;
     width: 72px;
-  }
+}
 
-  .card_back {
+.card_back {
     background: #555;
     border: 1px solid #999;
     float: left;
@@ -130,31 +127,28 @@
     padding: 0;
     text-align: center;
     width: 23px;
-  }
+}
 
-  .hand {
-    position: relative;
-  }
-  
-  p span {
+p span {
     white-space: pre-line;
     display: block;
-  }
-  .board-row:after {
+}
+
+.board-row:after {
     clear: both;
     content: '';
     display: table;
-  }
-  
-  .status {
+}
+
+.status {
     margin-bottom: 10px;
-  }
-  .game {
+}
+
+.game {
     display: flex;
     flex-direction: row;
-  }
-  
-  .game-info {
+}
+
+.game-info {
     margin-left: 20px;
-  }
-  
+}

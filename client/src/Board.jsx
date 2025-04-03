@@ -1,14 +1,15 @@
-import { Card } from "./Card"
+import { CardFan } from "./CardFan";
 
 export function Board({ hand, name }) {
-    const handArray = Array.from(hand).map(card =>
-        <Card key={card} value={card} board={true}/>
+    const cardArray = hand.map(card =>
+        [card, 0]
     );
+    const cardFan = <CardFan key={name} hand={cardArray} overlap={0} />
 
     return (
         <div>
             <p>{name}</p>
-            <div>{handArray}</div>
+            <div>{cardFan}</div>
             <p></p>
         </div>
     );

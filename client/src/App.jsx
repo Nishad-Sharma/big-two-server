@@ -1,8 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
 import { CreateGame } from './CreateGame';
+
+const cards = require.context('./card_svgs', true, /\.svg$/)
+export const cardPaths = cards
+    .keys()
+    .reduce((images, path) => {
+        images[path.split("/")[1].split(".")[0]] = cards(path)
+        return images
+    }, {})
 
 export const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
 export const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"

@@ -1,5 +1,4 @@
-import { Card } from "./Card";
-import { CardBack } from "./CardBack";
+import { CardFan } from "./CardFan";
 
 const PlayerStatusColor = Object.freeze({
     "passed": 'grey',
@@ -8,25 +7,21 @@ const PlayerStatusColor = Object.freeze({
 })
 
 export function Player({ id, hand, status, Fn }) {
-    var handArray;
+    var cardFan;
+    var length;
     if (Array.isArray(hand)) {
-        handArray = hand.map((card, index )=>
-            <Card key={card} value={card[0]} selected={card[1]} Fn={Fn} index={index} />
-        );
+        length = hand.length;
+        cardFan = <CardFan key={id} hand={hand} Fn={Fn} overlap={40} />
     } else if (Number.isInteger(hand)) {
-        let intArray = [...Array(hand).keys()]
-        handArray = Array.from(intArray).map((i) =>
-            <CardBack key={i} />
-        );
+        length = hand;
+        const cardBackArray = new Array(length).fill(["red_cardback", 0]);
+        cardFan = <CardFan key={id} hand={cardBackArray} overlap={45} />
     }
 
     return (
         <div>
-            <p style={{ color: PlayerStatusColor[status] }}>{id + " (" + handArray.length + ")"}</p>
-            <div className="hand">
-                {handArray}
-            </div>
-            <p></p>
+            <p style={{ color: PlayerStatusColor[status] }}>{id + " (" + length + ")"}</p>
+            {cardFan}
         </div>
     );
 }
