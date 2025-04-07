@@ -135,7 +135,8 @@ function getSelectableArray(newHand) {
 
 export default function Game() {
     const [playerID, setPlayerID] = useState("");
-    const gameID = 1;
+    // const gameID = 1;
+    const [gameID, setGameID] = useState(window.location.href.split("/").at(-1));
     const [board, setBoard] = useState(new Array());
     const [players, setPlayers] = useState(new Array());
     const [gameStatus, setGameStatus] = useState(GameStatus.Lobby);
@@ -143,6 +144,23 @@ export default function Game() {
     const prevPlayers = useRef(null);
 
     console.log(baseURL);
+    
+
+    // useEffect(
+    //     () => {
+    //         console.log("href");
+    //         console.log(window.location.href);
+    //         const split = window.location.href.split("/").at(-1);
+    //         console.log(split);
+    //         console.log("href end");
+    //         setGameID(split);
+    //     },
+    //     []
+    // )
+
+    console.log("GAMEID")
+    console.log(gameID);
+
 
     useEffect(
         () => {
@@ -153,7 +171,7 @@ export default function Game() {
 
     function handleplayerIDSubmit(pID) {
         if (pID == "") return;
-        const url = baseURL + "/game/" + gameID;
+        const url = baseURL + "/joinGame";
         const payload = { playerID: pID, gameID: gameID };
         fetch(url, {
             method: "POST",
@@ -197,7 +215,7 @@ export default function Game() {
             }
         })
 
-        const url = baseURL + "/game/" + gameID + "/turn";
+        const url = baseURL + "/sendTurn";
         const payload = { playerID: playerID, gameID: gameID, hand: turnArray };
         if (isPass) payload['hand'] = [];
 

@@ -14,7 +14,7 @@ let wss = new WebSocketServer({ noServer: true });
 
 var registry = new GameRegistry;
 
-registry.createGameWithId("1");
+// registry.createGameWithId("1");
 
 let server = app.listen(port, '0.0.0.0', () => {
     console.log(`App listening on port ${port}`);
@@ -27,7 +27,7 @@ server.on('upgrade', (request, socket, head) => {
     })
 })
 
-app.post('/game/1', (req, res) => {
+app.post('/joinGame', (req, res) => {
     var game = registry.getGame(req.body.gameID);
 
     if (game?.isExistingPlayer(req.body.playerID)) {
@@ -45,7 +45,7 @@ app.post('/game/1', (req, res) => {
     }
 })
 
-app.post('/game/1/turn', (req, res) => {
+app.post('/sendTurn', (req, res) => {
     var game = registry.getGame(req.body.gameID);
     let id = req.body.playerID;
     let hand = req.body.hand;
@@ -60,7 +60,7 @@ app.post('/game/1/turn', (req, res) => {
     }
 })
 
-app.post('/game', (_, res) => {
+app.post('/createGame', (_, res) => {
     let gameId = registry.createGame();
     if (gameId.kind == "ok") {
         res.statusCode = 200;
