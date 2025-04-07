@@ -1,154 +1,108 @@
-* {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: sans-serif;
-    margin: 20px;
-    padding: 0;
-}
-
-h1 {
-    margin-top: 0;
-    font-size: 22px;
-}
-
-h2 {
-    margin-top: 0;
-    font-size: 20px;
-}
-
-h3 {
-    margin-top: 0;
-    font-size: 18px;
-}
-
-h4 {
-    margin-top: 0;
-    font-size: 16px;
-}
-
-h5 {
-    margin-top: 0;
-    font-size: 14px;
-}
-
-h6 {
-    margin-top: 0;
-    font-size: 12px;
-}
-
-code {
-    font-size: 1.2em;
-}
-
-ul {
-    padding-inline-start: 20px;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    font-family: sans-serif;
-    margin: 20px;
-    padding: 0;
-}
-
-.square {
-    background: #fff;
-    border: 1px solid #999;
-    float: left;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 34px;
-    height: 34px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-    width: 34px;
-}
-
-.card {
-    background: #fff;
-    border: 1px solid #999;
-    float: left;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 34px;
-    height: 48px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
-    text-align: center;
-    width: 46px;
-}
-
-.board_card_svg {
-    padding: 0.5px;
-    height: 106px;
-    width: 72px;
-}
-
-.card_back_svg {
-    padding: 0.5px;
-    height: 106px;
-    width: 72px;
-}
-
 .card_svg {
     position: relative;
-    offset: 20px;
-    padding: 0.5px;
     height: 106px;
     width: 72px;
+    margin-left: calc(var(--offset) * 1px);
 }
 
 .selected_card_svg {
     position: relative;
     bottom: 20px;
-    padding: 0.5px;
     height: 106px;
     width: 72px;
+    margin-left: calc(var(--offset) * 1px);
 }
 
-.card_back {
-    background: #555;
-    border: 1px solid #999;
-    float: left;
-    font-size: 24px;
-    font-weight: bold;
-    line-height: 34px;
-    height: 24px;
-    margin-right: -1px;
-    margin-top: -1px;
-    padding: 0;
+.gameContainer {
+    position: absolute;
+    height: 90%;
+    width: 90%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.board {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.self {
+    position: absolute;
+    left: 50%;
+    top: 90%;
+    transform: translate(-50%, -50%);
+}
+
+.selfName {
     text-align: center;
-    width: 23px;
+    padding-bottom: 10px;
 }
 
-p span {
-    white-space: pre-line;
-    display: block;
-}
-
-.board-row:after {
-    clear: both;
-    content: '';
-    display: table;
-}
-
-.status {
-    margin-bottom: 10px;
-}
-
-.game {
+.selfFan {
     display: flex;
-    flex-direction: row;
+    padding-left: 40px;
 }
 
-.game-info {
-    margin-left: 20px;
+.top {
+    position: absolute;
+    left: 50%;
+    top: 0%;
+    transform: translate(-50%, 0%);
 }
+
+.topName {
+    text-align: center;
+}
+
+.topFan {
+    padding-left: 55px;
+    display: flex;
+}
+
+.right {
+    position: absolute;
+    right: 10%;
+    top: 25%;
+    transform: translate(50%, 0%);
+}
+
+.rightName {
+    text-align: center;
+}
+
+.rightFan {
+    display: flex;
+    transform: rotate(90deg) translate(50%, 0%);
+}
+
+.left {
+    position: absolute;
+    left: 10%;
+    top: 25%;
+    transform: translate(-50%, 0%);
+}
+
+.leftName {
+    text-align: center;
+}
+
+.leftFan {
+    display: flex;
+    transform: rotate(90deg) translate(50%, 0%);
+}
+
+.sortButton {
+    position: absolute;
+    left: 20%;
+    bottom: 5%;
+}
+
+.actionButton {
+    position: absolute;
+    right: 20%;
+    bottom: 5%;
+}
+

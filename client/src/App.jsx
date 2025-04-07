@@ -3,6 +3,7 @@ import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
 import { CreateGame } from './CreateGame';
+import { Card } from './Card';
 
 const cards = require.context('./card_svgs', true, /\.svg$/)
 export const cardPaths = cards
@@ -20,6 +21,8 @@ const GameStatus = Object.freeze({
     "Playing": 1,
     "Complete": 2,
 })
+
+export const playerLayout = ["left", "top", "right", "self"];
 
 const HighCardRanking = Object.freeze({
     "3d": 1,
@@ -314,28 +317,31 @@ export default function Game() {
     } else {
         const connectedPlayers = [];
         var position = getSelfArrayPosition(players);
+        console.log("playerlayout");
 
         for (var i = 0; i < players.length; i++) {
+            console.log(playerLayout[i]);
             const player = players[(i + position + 1) % players.length];
-            connectedPlayers.push(<div key={player.id}><Player id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} /></div>)
+            connectedPlayers.push(<Player id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
         }
 
         return (
-            <div>
-                <div>
+            <div className="gameContainer">
+                <div className="sortButton">
+                    <button onClick={() => sortHand()}>
+                        Sort
+                    </button>
+                </div>
+                <div className="actionButton">
                     <button onClick={() => sendTurn(false)}>
                         Play
                     </button>
                     <button onClick={() => sendTurn(true)}>
                         Pass
                     </button>
-                    <button onClick={() => sortHand()}>
-                        Sort
-                    </button>
-                    <br />
-                    {connectedPlayers}
-                    <Board hand={board} name="Board" />
-                </div>
+                </div>                
+                {connectedPlayers}
+                <Board hand={board} name="Board" />
             </div>
         );
     }

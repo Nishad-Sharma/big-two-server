@@ -1,12 +1,13 @@
 import { Card } from "./Card";
 
-export function CardFan({ hand, Fn, overlap = 0 }) {
+export function CardFan({ hand, Fn, position }) {
     const cards = hand.map((card, index) =>
-        <Card key={index} value={card[0]} selected={card[1]} Fn={Fn} index={index} overlap={overlap} />
+        <Card key={index} value={card[0]} selected={card[1]} Fn={Fn} position={position}/>
     );
 
+    const css = position + "Fan"
     return (
-        <div>
+        <div className={css} >
             {cards}
         </div>
     )

@@ -4,11 +4,10 @@ export function Board({ hand, name }) {
     const cardArray = hand.map(card =>
         [card, 0]
     );
-    const cardFan = <CardFan key={name} hand={cardArray} overlap={0} />
+    const cardFan = <CardFan key={name} hand={cardArray} position="board"/>
 
     return (
-        <div>
-            <p>{name}</p>
+        <div className="board">
             <div>{cardFan}</div>
             <p></p>
         </div>
