@@ -1,12 +1,22 @@
 import React, { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM, { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { CreateGame } from "./CreateGame";
+import Game from "./Game";
 import "./styles.css";
 
-import App from "./App";
 
-const root = createRoot(document.getElementById("root"));
-root.render(
-  // <StrictMode>
-    <App />
-  // </StrictMode>
-);
+export default function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<CreateGame />} />
+                <Route path="/game/*" element={<Game />} />
+            </Routes>
+        </BrowserRouter>
+    )
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);

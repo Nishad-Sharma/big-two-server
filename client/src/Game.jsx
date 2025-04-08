@@ -2,8 +2,6 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
-import { CreateGame } from './CreateGame';
-import { Card } from './Card';
 
 const cards = require.context('./card_svgs', true, /\.svg$/)
 export const cardPaths = cards
@@ -133,6 +131,11 @@ function getSelectableArray(newHand) {
     return parsedHand;
 }
 
+function copyLink() {
+    var copyText = document.getElementById("link").href;
+    navigator.clipboard.writeText(copyText);
+}
+
 export default function Game() {
     const [playerID, setPlayerID] = useState("");
     // const gameID = 1;
@@ -144,23 +147,6 @@ export default function Game() {
     const prevPlayers = useRef(null);
 
     console.log(baseURL);
-    
-
-    // useEffect(
-    //     () => {
-    //         console.log("href");
-    //         console.log(window.location.href);
-    //         const split = window.location.href.split("/").at(-1);
-    //         console.log(split);
-    //         console.log("href end");
-    //         setGameID(split);
-    //     },
-    //     []
-    // )
-
-    console.log("GAMEID")
-    console.log(gameID);
-
 
     useEffect(
         () => {
@@ -315,8 +301,11 @@ export default function Game() {
     if (playerID == "") {
         return (
             <div>
+                <p>Enter your name:</p>
                 <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
-                <CreateGame></CreateGame>
+                <p>Share link to game:</p>
+                <a href={window.location.href} id="link" >{window.location.href}</a>
+                <button onClick={() => copyLink()}>Copy link</button>
             </div>
         )
     } else if (players.length < 4) { // use GameSTatus???
@@ -330,6 +319,10 @@ export default function Game() {
                 <br />
                 <h2>Connected:</h2>
                 {connectedPlayers}
+                <br/>
+                <p>Share link to game:</p>
+                <a href={window.location.href} id="link" >{window.location.href}</a>
+                <button onClick={() => copyLink()}>Copy link</button>
             </div>
         )
     } else {
@@ -340,7 +333,7 @@ export default function Game() {
         for (var i = 0; i < players.length; i++) {
             console.log(playerLayout[i]);
             const player = players[(i + position + 1) % players.length];
-            connectedPlayers.push(<Player id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
+            connectedPlayers.push(<Player key={player.id} id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
         }
 
         return (
@@ -357,7 +350,7 @@ export default function Game() {
                     <button onClick={() => sendTurn(true)}>
                         Pass
                     </button>
-                </div>                
+                </div>
                 {connectedPlayers}
                 <Board hand={board} name="Board" />
             </div>

@@ -1,45 +1,46 @@
-import { useState } from "react";
-import { baseURL } from "./App";
+import { useEffect, useState } from "react";
+import { baseURL } from "./Game";
+import { useNavigate } from "react-router-dom";
 
-export const CreateGame = () => {
-    const [gameId, setGameId] = useState(null);
+
+export function CreateGame() {
+    const [gameId, setGameId] = useState("");
     const [errorMsg, setErrorMsg] = useState();
-
-    // console.log("GRAH");
-    // console.log(gameId);
-    // console.log(window.location.href)
-    // window.location.href = gameId;
+    const navigate = useNavigate(); 
 
     let gameCreationStatus = () => {
-        if (gameId != null) return <p>{gameId}</p>
+        if (gameId != "") return <p>{window.location.href + "game/" + gameId}</p>
         else if (errorMsg != null) return <p>{errorMsg}</p>
         else return <p></p>
     }
 
     return (
         <div>
-            <button onClick={() => createGameReq(setGameId, setErrorMsg)}>Create Game</button>
+            <button onClick={() => createGameReq(setGameId, setErrorMsg, navigate)}>Create Game</button>
             <div>{gameCreationStatus()}</div>
-        </div> 
+        </div>
     )
- 
 }
 
-function createGameReq(setGameIdFn, setErrorFn) {
+function createGameReq(setGameIdFn, setErrorFn, navigate) {
     const url = baseURL + "/createGame";
     fetch(url, {
         method: "POST",
     })
-    .then(response => {
-        if (response.status == 200) {
-            console.log("nice!");
-            response.json().then(json => setGameIdFn(window.location.href + "game/" + json.gameId));
-        }
-        else if (response.status == 500) {
-            response.json().then(json => setErrorFn(json.error)); 
-            console.log("SHIT")
-        } else {
-            console.log("Create game: Unexpected response from server")
-        }
-    });
+        .then(response => {
+            if (response.status == 200) {
+                console.log("nice!");
+                response.json().then(json => {
+                    setGameIdFn(json.gameId)
+                    const path = "game/" +json.gameId;
+                    navigate(path);
+                });
+                
+            }
+            else if (response.status == 500) {
+                response.json().then(json => setErrorFn(json.error));
+            } else {
+                console.log("Create game: Unexpected response from server")
+            }
+        });
 }

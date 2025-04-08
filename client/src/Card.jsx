@@ -1,4 +1,4 @@
-import { cardPaths } from "./App";
+import { cardPaths } from "./Game";
 
 export function Card({ value, selected = 0, Fn = () => void 0, position }) {
     const cardSrc = cardPaths[value];
