@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { baseURL } from "./Game";
 import { useNavigate } from "react-router-dom";
+import { VisualiseCard } from "./VisualiseCard"
 
 
 export function CreateGame() {
     const [gameId, setGameId] = useState("");
     const [errorMsg, setErrorMsg] = useState();
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     let gameCreationStatus = () => {
         if (gameId != "") return <p>{window.location.href + "game/" + gameId}</p>
@@ -16,6 +17,7 @@ export function CreateGame() {
 
     return (
         <div>
+            <VisualiseCard />
             <button onClick={() => createGameReq(setGameId, setErrorMsg, navigate)}>Create Game</button>
             <div>{gameCreationStatus()}</div>
         </div>
@@ -32,10 +34,10 @@ function createGameReq(setGameIdFn, setErrorFn, navigate) {
                 console.log("nice!");
                 response.json().then(json => {
                     setGameIdFn(json.gameId)
-                    const path = "game/" +json.gameId;
+                    const path = "game/" + json.gameId;
                     navigate(path);
                 });
-                
+
             }
             else if (response.status == 500) {
                 response.json().then(json => setErrorFn(json.error));
