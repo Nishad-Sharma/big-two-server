@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { baseURL } from "./Game";
 import { useNavigate } from "react-router-dom";
-import { VisualiseCard } from "./VisualiseCard"
 
 
 export function CreateGame() {
@@ -17,7 +16,6 @@ export function CreateGame() {
 
     return (
         <div>
-            <VisualiseCard />
             <button onClick={() => createGameReq(setGameId, setErrorMsg, navigate)}>Create Game</button>
             <div>{gameCreationStatus()}</div>
         </div>

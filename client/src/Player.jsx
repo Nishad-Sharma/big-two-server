@@ -14,7 +14,7 @@ export function Player({ id, hand, status, Fn, position}) {
         cardFan = <CardFan key={id} hand={hand} Fn={Fn} position={position} />
     } else if (Number.isInteger(hand)) {
         length = hand;
-        const cardBackArray = new Array(length).fill(["red_cardback", 0]);
+        const cardBackArray = new Array(length).fill(["cardback", 0]);
         cardFan = <CardFan key={id} hand={cardBackArray} position={position}/>
     }
     const css = position + "Name"

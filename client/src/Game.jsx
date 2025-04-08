@@ -3,14 +3,6 @@ import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
 
-const cards = require.context('./card_svgs', true, /\.svg$/)
-export const cardPaths = cards
-    .keys()
-    .reduce((images, path) => {
-        images[path.split("/")[1].split(".")[0]] = cards(path)
-        return images
-    }, {})
-
 export const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
 export const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
 
@@ -328,10 +320,8 @@ export default function Game() {
     } else {
         const connectedPlayers = [];
         var position = getSelfArrayPosition(players);
-        console.log("playerlayout");
 
         for (var i = 0; i < players.length; i++) {
-            console.log(playerLayout[i]);
             const player = players[(i + position + 1) % players.length];
             connectedPlayers.push(<Player key={player.id} id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
         }
