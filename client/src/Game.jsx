@@ -279,7 +279,6 @@ export default function Game() {
             socket.onmessage = (event) => {
                 console.log(`Received message: ${event.data}`);
                 handleServerMessage(event.data);
-                // Handle the received message as required
             };
 
             return () => {
@@ -292,29 +291,40 @@ export default function Game() {
 
     if (playerID == "") {
         return (
-            <div>
-                <p>Enter your name:</p>
-                <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
-                <p>Share link to game:</p>
-                <a href={window.location.href} id="link" >{window.location.href}</a>
-                <button onClick={() => copyLink()}>Copy link</button>
+            <div className="background">
+                <div className="menu">
+                    <p className="menuText" >Enter your name:</p>
+                    <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
+                    <br/>
+                    <p className="menuText" >Share game link:</p>
+                    <div className="menuText">
+                        <a href={window.location.href} id="link" ></a>
+                        <button className="menuButton" onClick={() => copyLink()}>Copy link</button>
+                    </div>
+                </div>
             </div>
         )
+        
     } else if (players.length < 4) { // use GameSTatus???
         const connectedPlayers = [];
         players.forEach(player => {
-            connectedPlayers.push(<div key={player.id}>{player.id}<br /></div>)
+            connectedPlayers.push(<div className="connectedText" key={player.id}>{player.id}<br /></div>)
         })
         return (
-            <div>
-                <h1>Waiting for 4 players...</h1>
-                <br />
-                <h2>Connected:</h2>
-                {connectedPlayers}
-                <br/>
-                <p>Share link to game:</p>
-                <a href={window.location.href} id="link" >{window.location.href}</a>
-                <button onClick={() => copyLink()}>Copy link</button>
+            <div className="background">
+                <div className="menu">
+                    <h1 className="menuText">Waiting for 4 players...</h1>
+                    {/* <br /> */}
+                    <h2 className="menuText">Joined:</h2>
+                    {connectedPlayers}
+                    <br />
+                    <p className="menuText" >Share game link:</p>
+                    <div className="menuText">
+                        <a href={window.location.href} id="link" ></a>
+                        <button className="menuButton" onClick={() => copyLink()}>Copy link</button>
+                    </div>
+                    
+                </div>
             </div>
         )
     } else {
@@ -327,22 +337,24 @@ export default function Game() {
         }
 
         return (
-            <div className="gameContainer">
-                <div className="sortButton">
-                    <button onClick={() => sortHand()}>
-                        Sort
-                    </button>
+            <div className="background">
+                <div className="gameContainer">
+                    <div className="sortButton">
+                        <button className="menuButton" onClick={() => sortHand()}>
+                            Sort
+                        </button>
+                    </div>
+                    <div className="actionButton">
+                        <button className="menuButton" onClick={() => sendTurn(false)}>
+                            Play
+                        </button>
+                        <button className="menuButton" style={{"margin-left": "2px"}}onClick={() => sendTurn(true)}>
+                            Pass
+                        </button>
+                    </div>
+                    {connectedPlayers}
+                    <Board hand={board} name="Board" />
                 </div>
-                <div className="actionButton">
-                    <button onClick={() => sendTurn(false)}>
-                        Play
-                    </button>
-                    <button onClick={() => sendTurn(true)}>
-                        Pass
-                    </button>
-                </div>
-                {connectedPlayers}
-                <Board hand={board} name="Board" />
             </div>
         );
     }

@@ -20,6 +20,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    margin: 1px;
 }
 
 .board {
@@ -28,8 +29,10 @@
     top: 50%;
     transform: translate(-50%, -50%);
 }
+
 .boardFan {
     display: flex;
+    padding-left: 1px;
 }
 
 .self {
@@ -41,12 +44,13 @@
 
 .selfName {
     text-align: center;
-    padding-bottom: 10px;
+    height: fit-content;
+    margin: 0;
 }
 
 .selfFan {
     display: flex;
-    padding-left: 40px;
+    padding-left: 50px;
 }
 
 .top {
@@ -58,42 +62,51 @@
 
 .topName {
     text-align: center;
+    height: fit-content;
+
+    margin: 0;
 }
 
 .topFan {
-    padding-left: 55px;
+    padding-left: 75px;
     display: flex;
 }
 
 .right {
     position: absolute;
-    right: 10%;
-    top: 25%;
+    right: 25%;
+    top: 30%;
     transform: translate(50%, 0%);
 }
 
 .rightName {
     text-align: center;
+    margin: 0;
+
 }
 
 .rightFan {
     display: flex;
+    padding-left: 20px;
     transform: rotate(90deg) translate(50%, 0%);
 }
 
 .left {
     position: absolute;
-    left: 10%;
-    top: 25%;
+    left: 25%;
+    top: 30%;
     transform: translate(-50%, 0%);
 }
 
 .leftName {
     text-align: center;
+    margin: 0;
+
 }
 
 .leftFan {
     display: flex;
+    padding-left: 20px;
     transform: rotate(90deg) translate(50%, 0%);
 }
 
@@ -101,12 +114,15 @@
     position: absolute;
     left: 20%;
     bottom: 5%;
+    translate: (-50%);
 }
 
 .actionButton {
     position: absolute;
     right: 20%;
     bottom: 5%;
+    translate: (50%);
+
 }
 
 .cardContainer {
@@ -124,10 +140,10 @@
     top: 8px;
     left: 2px;
     width: 20px;
-    height: 20px; 
+    height: 20px;
     position: absolute;
     flex-direction: column;
-    display:flex;
+    display: flex;
     justify-content: center;
 
 }
@@ -137,40 +153,298 @@
     bottom: 8px;
     right: 2px;
     width: 20px;
-    height: 20px; 
+    height: 20px;
     flex-direction: column;
-    display:flex;
+    display: flex;
     justify-content: center;
     transform: rotate(180deg);
 }
 
-.suit {
+.suitBlack {
     width: 70%;
     height: 70%;
     margin: auto;
     align-items: center;
+    z-index: 4;
+    filter: invert(59%) sepia(41%) saturate(420%) hue-rotate(186deg) brightness(94%) contrast(86%);
+
+} 
+
+.suitRed {
+    width: 70%;
+    height: 70%;
+    margin: auto;
+    align-items: center;
+    z-index: 4;
+    filter: invert(61%) sepia(48%) saturate(711%) hue-rotate(300deg) brightness(105%) contrast(101%);
+
 }
 
 .rankTextRed {
-    font-family: Georgia;
-    color: red;
+    font-family: Verdana;
+    color: var(--redSuitColor);
     width: 20px;
     height: 20px;
     text-align: center;
+    z-index: 5;
 }
 
 .rankTextBlack {
-    font-family: Georgia;
-    color: black;
+    font-family: Verdana;
+    color: var(--blackSuitColor);
     width: 20px;
     height: 20px;
     text-align: center;
+    z-index: 5;
 }
 
-.centeredSuit {
+.centeredSuitRed {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     width: 70%;
+    filter: invert(61%) sepia(48%) saturate(711%) hue-rotate(300deg) brightness(105%) contrast(101%);
 }
+
+.centeredSuitBlack {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    filter: invert(59%) sepia(41%) saturate(420%) hue-rotate(186deg) brightness(94%) contrast(86%);
+}
+
+
+/* UI */
+@font-face {
+    font-family: 'ThunderBoom';
+    src: local('ThunderBoom'), url(./fonts/ThunderBoom.ttf) format('truetype');
+}
+
+:root {
+    --uiFont: ThunderBoom;
+    --bgcolor: #ffc0be;
+    --letterSpacing: 1px;
+    --menuColor: #FFEBE7;
+    --secondaryColor: #354265;
+    --redSuitColor: #ff82a9;
+    --blackSuitColor: #7f95d1;
+
+}
+
+.gameTitle {
+    color: var(--blackSuitColor);
+    font-family: var(--uiFont);
+    margin: auto;
+    width: 50%;
+    height: 50%;
+    text-align: center;
+    align-content: center;
+    font-size: 500%;
+}
+
+.background {
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    height: 100%;
+    width: 100%;
+    background-color: var(--bgcolor);
+}
+
+.createGameButton {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.submitForm {
+    position: relative;
+    left: 8%;
+    height: 150%;
+    width: 30%;
+    font-size: 150%;
+    background-color: transparent;
+    color: #354265;
+    text-align: center;
+    outline: none;
+    outline-style: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: solid var(--secondaryColor) 1px;
+    border-bottom: solid var(--blackSuitColor) 1px;
+    margin-right: 10%;
+    font-family: var(--uiFont);
+    letter-spacing: var(--letterSpacing);
+    padding: 3px 10px;
+    
+}
+
+.menuButton {
+    font-family: var(--uiFont);
+    background-color: var(--blackSuitColor);
+    border-radius: 10px;
+    padding-top: 5px;
+    font-size: large;
+    letter-spacing: var(--letterSpacing);
+    color: var(--menuColor);
+    border-color: var(--blackSuitColor);
+    box-shadow: 0px 19px 38px 0px rgba(0, 0, 0, 0.3);
+}
+
+.playerName {
+    font-family: var(--uiFont);
+    background-color: var(--blackSuitColor);
+    border-radius: 10px;
+    font-size: larger;
+    letter-spacing: var(--letterSpacing);
+    color: var(--menuColor);
+    border-color: var(--blackSuitColor);
+    box-shadow: 0px 19px 38px 0px rgba(0, 0, 0, 0.3);
+    border: 0;
+    position: relative;
+    left: 50%;
+    height: fit-content;
+    width: fit-content;
+    padding: 7px;
+    transform: translate(-50%);
+    margin-bottom: 12px;
+}
+
+.menu {
+    position: relative;
+    align-items: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 19px 38px -0px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 5%;
+    width: fit-content;
+    background-color: var(--menuColor);
+}
+
+.menuText {
+    color: var(--blackSuitColor);
+    font-family: var(--uiFont);
+    letter-spacing: var(--letterSpacing);
+    
+    justify-content: space-between;
+    text-align: center;
+    width: 100%;
+}
+
+.connectedText {
+    font-family: var(--uiFont);
+    letter-spacing: var(--letterSpacing);
+    color: var(--secondaryColor);
+    text-align: center;
+    font-size: 150%;
+    width: 100%;
+}
+
+.loginForm {
+    position: relative;
+    color: var(--blackSuitColor);
+    text-align: center;
+    width: 100%;
+    left: 4%;
+}
+
+/* TEMP CARD */
+
+
+
+/* .cardc {
+    position: relative;
+    width: 86px;
+    height: 120px;
+    border-radius: 10px;
+    background-color: #ffebe7;
+    box-shadow: 0px 19px 38px -25px rgba(0, 0, 0, 0.3); */
+  
+  
+    /* border: 1px;
+    border-style: solid;
+    border-color: #000;
+    z-index: 1; */
+/* } */
+
+/* .centereds {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    height: 30%;
+    background-color: var(--blackSuitColor);
+}
+
+.centeredsr {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    height: 30%;
+    background-color: #ff82a9;
+}
+
+.s {
+    width: 10px;
+    height: 10px;
+    margin: auto;
+    align-items: center;
+    background-color: var(--blackSuitColor);
+}
+
+.sr {
+    width: 10px;
+    height: 10px;
+    margin: auto;
+    align-items: center;
+    background-color: #ff82a9;
+}
+
+.redt {
+    font-family: Garamond;
+    color: #ff82a9;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    z-index: 5;
+}
+
+.blackt {
+    font-family: Garamond;
+    color: var(--blackSuitColor);
+    width: 15px;
+    height: 15px;
+    text-align: center;
+    z-index: 5;
+    padding-bottom: 2px;
+} */
+/* 
+.cardt {
+    top: 8px;
+    left: 2px;
+    position: absolute;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+
+}
+
+.cardb {
+    position: absolute;
+    bottom: 8px;
+    right: 2px;
+
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    transform: rotate(180deg);
+} */

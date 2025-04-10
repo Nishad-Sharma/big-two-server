@@ -1,9 +1,7 @@
-import club from "./assets/club.png"
-import heart from "./assets/heart.png"
-import diamond from "./assets/diamond.png"
-import spade from "./assets/spade.png"
-import cardFront from "./assets/card_front.png"
-import cardBack from "./assets/card_back.png"
+import club from "./assets/club1.png"
+import heart from "./assets/heart1.png"
+import diamond from "./assets/diamond1.png"
+import spade from "./assets/spade1.png"
 
 const SuitName = Object.freeze({
     "s": spade,
@@ -20,31 +18,34 @@ export function VisualiseCard({ cardValue }) {
     }
     const suit = SuitName[cardValue.slice(-1)];
     var textcss;
+    var centerSuit;
+    var miniSuit;
     if (suit == spade || suit == club) {
         textcss = "rankTextBlack";
+        centerSuit = "centeredSuitBlack";
+        miniSuit = "suitBlack";
     } else {
         textcss = "rankTextRed";
+        centerSuit = "centeredSuitRed";
+        miniSuit = "suitRed";
     }
 
     if (cardValue == "cardback") {
         return (
-            <div className="cardContainer">
-                <img src={cardBack} className="cardFace"></img>
-            </div>
+            <div className="cardc" style={{border: "1px", "border-style":"solid"}} />
         )
     }
 
     return (
-        <div className="cardContainer">
-            <img src={cardFront} className="cardFace"></img>
-            <img src={suit} className="centeredSuit"></img>
+        <div className="cardc">
+            <img src={suit} className={centerSuit} ></img>
             <div className="cardTop">
                 <div className={textcss}>{rank}</div>
-                <img src={suit} className="suit"></img>
+                <img src={suit} className={miniSuit}></img>
             </div>
             <div className="cardBottom">
                 <div className={textcss}>{rank}</div>
-                <img src={suit} className="suit"></img>
+                <img src={suit} className={miniSuit}></img>
             </div>
         </div>
     )

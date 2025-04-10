@@ -8,9 +8,9 @@ export const LoginForm = ({ handleSubmit }) => {
     };
 
     return (
-        <div className="App">
-            <input type="text" value={data} onChange={handleChange} />
-            <button onClick={() => handleSubmit(data)}>Submit</button>
+        <div className="loginForm">
+            <input maxlength="15" spellCheck="false" className="submitForm" type="text" value={data} onChange={handleChange} />
+            <button className="menuButton" onClick={() => handleSubmit(data)}>submit</button>
         </div>
     );
 }

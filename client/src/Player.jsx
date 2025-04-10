@@ -1,9 +1,9 @@
 import { CardFan } from "./CardFan";
 
 const PlayerStatusColor = Object.freeze({
-    "passed": 'grey',
-    "waiting": 'blue',
-    "turn": 'green',
+    "passed": '#e4e9f7',
+    "waiting": '#354265',
+    "turn": '#7fd184',
 })
 
 export function Player({ id, hand, status, Fn, position}) {
@@ -21,7 +21,9 @@ export function Player({ id, hand, status, Fn, position}) {
 
     return (
         <div className={position}>
-            <p className={css} style={{ color: PlayerStatusColor[status] }}>{id + " (" + length + ")"}</p>
+            <button className="playerName" >
+                <p className={css} style={{ color: PlayerStatusColor[status] }}>{id + " (" + length + ")"}</p>
+            </button>
             {cardFan}
         </div>
     );
