@@ -358,20 +358,20 @@
 
 
 
-/* .cardc {
+.cardc {
     position: relative;
     width: 86px;
     height: 120px;
     border-radius: 10px;
     background-color: #ffebe7;
-    box-shadow: 0px 19px 38px -25px rgba(0, 0, 0, 0.3); */
+    box-shadow: 0px 19px 38px -25px rgba(0, 0, 0, 0.3);
   
   
     /* border: 1px;
     border-style: solid;
     border-color: #000;
     z-index: 1; */
-/* } */
+}
 
 /* .centereds {
     position: absolute;
