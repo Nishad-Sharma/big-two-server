@@ -3,6 +3,7 @@
 build the server in the root directory
 
 ```yarn```
+
 then run the server
 
 ```yarn run dev```
