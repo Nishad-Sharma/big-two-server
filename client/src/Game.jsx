@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { LoginForm } from "./LoginForm";
 import { Player } from "./Player";
 import { Board } from "./Board";
+import { GameOver } from "./GameOver";
 
 export const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
 export const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
@@ -115,7 +116,7 @@ function updateSelectableArray(newHand, prevHand) {
     return parsedHand;
 }
 
-function getSelectableArray(newHand) {
+function createSelectableArray(newHand) {
     var parsedHand = [];
     newHand.forEach(card => {
         parsedHand.push([card, 0]);
@@ -206,6 +207,18 @@ export default function Game() {
         })
     }
 
+    function sendRestartGame() {
+        const url = baseURL + "/restartGame";
+        const payload = { gameID: gameID };
+        const response = fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+        })
+    }
+
     function getPlayer() {
         const player = players.find((p) => p.id == playerID);
         return player;
@@ -243,9 +256,18 @@ export default function Game() {
         var player = playerData.find(p => Array.isArray(p.hand));
         const position = getSelfArrayPosition(playerData);
 
+        // bad if player actions can be taken after game over or if restartGame can be called during play
+        if (gameStatus == GameStatus.Complete) {
+            playerData[position].hand = createSelectableArray(playerData[position].hand);
+            return playerData;
+        }
+
+        // if player has cards
         if (player.hand.length > 0) {
-            if ((prevPlayers.current.length == 0) || (prevPlayers.current[position].hand.length == 0)) {
-                playerData[position].hand = getSelectableArray(playerData[position].hand);
+            // Check if last render; players was not null, no. of players was 0, players hand was empty (this is important, get the 
+            // moment game state shifts from no cards dealt to cards dealt - also happens during restartGame logic)
+            if (!prevPlayers.current || prevPlayers.current.length == 0 || prevPlayers.current[position].hand.length == 0) {
+                playerData[position].hand = createSelectableArray(playerData[position].hand);
             } else {
                 const prevHand = prevPlayers.current[position].hand;
                 playerData[position].hand = updateSelectableArray(playerData[position].hand, prevHand);
@@ -260,6 +282,12 @@ export default function Game() {
         setBoard(parsedData.board);
         setPlayers(handledPlayerData);
         setGameStatus(parsedData.status);
+
+        // after last hand is played, gameStatus has been set to complete,
+        // we also set everyones prevPlayers to null
+        if (parsedData.status == GameStatus.Complete) {
+            prevPlayers.current = null;
+        }
     }
 
     useEffect(
@@ -273,7 +301,6 @@ export default function Game() {
             socket.onopen = () => {
                 console.log('WebSocket connection established');
                 socket.send(JSON.stringify({ type: 'initSocket', message: { pID: playerID, gID: gameID } }))
-                // Perform any necessary actions when the connection is open
             };
 
             socket.onmessage = (event) => {
@@ -284,7 +311,6 @@ export default function Game() {
             return () => {
                 socket.close();
             }
-
         },
         [playerID]
     )
@@ -295,7 +321,7 @@ export default function Game() {
                 <div className="menu">
                     <p className="menuText" >Enter your name:</p>
                     <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
-                    <br/>
+                    <br />
                     <p className="menuText" >Share game link:</p>
                     <div className="menuText">
                         <a href={window.location.href} id="link" ></a>
@@ -304,8 +330,7 @@ export default function Game() {
                 </div>
             </div>
         )
-        
-    } else if (players.length < 4) { // use GameSTatus???
+    } else if (gameStatus == GameStatus.Lobby) {
         const connectedPlayers = [];
         players.forEach(player => {
             connectedPlayers.push(<div className="connectedText" key={player.id}>{player.id}<br /></div>)
@@ -323,11 +348,11 @@ export default function Game() {
                         <a href={window.location.href} id="link" ></a>
                         <button className="menuButton" onClick={() => copyLink()}>Copy link</button>
                     </div>
-                    
+
                 </div>
             </div>
         )
-    } else {
+    } else if (gameStatus == GameStatus.Playing) {
         const connectedPlayers = [];
         var position = getSelfArrayPosition(players);
 
@@ -348,13 +373,48 @@ export default function Game() {
                         <button className="menuButton" onClick={() => sendTurn(false)}>
                             Play
                         </button>
-                        <button className="menuButton" style={{"margin-left": "2px"}}onClick={() => sendTurn(true)}>
+                        <button className="menuButton" style={{ "margin-left": "2px" }} onClick={() => sendTurn(true)}>
                             Pass
                         </button>
                     </div>
                     {connectedPlayers}
                     <Board hand={board} name="Board" />
                 </div>
+            </div>
+        );
+    } else if (gameStatus == GameStatus.Complete) {
+        const connectedPlayers = [];
+        var position = getSelfArrayPosition(players);
+        var winner;
+
+        for (var i = 0; i < players.length; i++) {
+            if (players[i].hand.length == 0) {
+                winner = players[i].id;
+            }
+            const player = players[(i + position + 1) % players.length];
+            connectedPlayers.push(<Player key={player.id} id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
+        }
+
+        return (
+            <div className="background">
+                <div className="gameContainer">
+                    <div className="sortButton">
+                        <button className="menuButton" onClick={() => sortHand()}>
+                            Sort
+                        </button>
+                    </div>
+                    <div className="actionButton">
+                        <button className="menuButton" onClick={() => sendTurn(false)}>
+                            Play
+                        </button>
+                        <button className="menuButton" style={{ "margin-left": "2px" }} onClick={() => sendTurn(true)}>
+                            Pass
+                        </button>
+                    </div>
+                    {connectedPlayers}
+                    <Board hand={board} name="Board" />
+                </div>
+                <GameOver winner={winner} Fn={sendRestartGame} />
             </div>
         );
     }

@@ -8,11 +8,6 @@ export function CreateGame() {
     const [errorMsg, setErrorMsg] = useState();
     const navigate = useNavigate();
 
-    // let gameCreationStatus = () => {
-    //     if (gameId != "") return <p>{window.location.href + "game/" + gameId}</p>
-    //     else if (errorMsg != null) return <p>{errorMsg}</p>
-    //     else return <p></p>
-    // }
     return (
         <div className="background">
             <h1 className="gameTitle">Big Two</h1>

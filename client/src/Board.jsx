@@ -4,7 +4,7 @@ export function Board({ hand, name }) {
     const cardArray = hand.map(card =>
         [card, 0]
     );
-    const cardFan = <CardFan key={name} hand={cardArray} position="board"/>
+    const cardFan = <CardFan key={name} hand={cardArray} position="board" />
 
     return (
         <div className="board">

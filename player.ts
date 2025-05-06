@@ -1,5 +1,6 @@
 export default class Player {
     private hand: string[];
+    // hand: string[]; // for dumpstate testing
     id: string;
     status: PlayerStatus;
 
@@ -11,6 +12,10 @@ export default class Player {
 
     setHand(hand: string[]) {
         this.hand = hand;
+    }
+
+    setStatus(status: PlayerStatus) {
+        this.status = status;
     }
 
     getHand(): string[] {
@@ -65,5 +70,5 @@ export class HiddenPlayer {
 export enum PlayerStatus {
     Passed = "passed",
     Waiting = "waiting",
-    Turn =  "turn",
+    Turn = "turn",
 }

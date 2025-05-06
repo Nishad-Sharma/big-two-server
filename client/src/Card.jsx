@@ -8,10 +8,10 @@ export function Card({ value, selected = 0, Fn = () => void 0, position }) {
     } else if (position == "board") {
         offset = 1;
     }
-    
+
     return (
-        <div onClick={() => Fn({ value })} className={css_class} style={{"--offset": offset}}>
-            <VisualiseCard cardValue={value}/>
+        <div onClick={() => Fn({ value })} className={css_class} style={{ "--offset": offset }}>
+            <VisualiseCard cardValue={value} />
         </div>
     );
 }

@@ -1,7 +1,7 @@
-import club from "./assets/club1.png"
-import heart from "./assets/heart1.png"
-import diamond from "./assets/diamond1.png"
-import spade from "./assets/spade1.png"
+import club from "./assets/club2.png"
+import heart from "./assets/heart2.png"
+import diamond from "./assets/diamond2.png"
+import spade from "./assets/spade2.png"
 
 const SuitName = Object.freeze({
     "s": spade,
@@ -32,7 +32,7 @@ export function VisualiseCard({ cardValue }) {
 
     if (cardValue == "cardback") {
         return (
-            <div className="cardc" style={{border: "1px", "border-style":"solid"}} />
+            <div className="cardc" style={{ border: "1px", "border-style": "solid" }} />
         )
     }
 

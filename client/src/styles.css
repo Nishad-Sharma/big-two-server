@@ -63,7 +63,6 @@
 .topName {
     text-align: center;
     height: fit-content;
-
     margin: 0;
 }
 
@@ -168,7 +167,7 @@
     z-index: 4;
     filter: invert(59%) sepia(41%) saturate(420%) hue-rotate(186deg) brightness(94%) contrast(86%);
 
-} 
+}
 
 .suitRed {
     width: 70%;
@@ -181,7 +180,7 @@
 }
 
 .rankTextRed {
-    font-family: Verdana;
+    font-family: var(--cardFont);
     color: var(--redSuitColor);
     width: 20px;
     height: 20px;
@@ -190,7 +189,7 @@
 }
 
 .rankTextBlack {
-    font-family: Verdana;
+    font-family: var(--cardFont);
     color: var(--blackSuitColor);
     width: 20px;
     height: 20px;
@@ -225,6 +224,7 @@
 
 :root {
     --uiFont: ThunderBoom;
+    --cardFont: Verdana;
     --bgcolor: #ffc0be;
     --letterSpacing: 1px;
     --menuColor: #FFEBE7;
@@ -280,14 +280,14 @@
     font-family: var(--uiFont);
     letter-spacing: var(--letterSpacing);
     padding: 3px 10px;
-    
+
 }
 
 .menuButton {
     font-family: var(--uiFont);
     background-color: var(--blackSuitColor);
     border-radius: 10px;
-    padding-top: 5px;
+    padding: 5px;
     font-size: large;
     letter-spacing: var(--letterSpacing);
     color: var(--menuColor);
@@ -310,7 +310,7 @@
     height: fit-content;
     width: fit-content;
     padding: 7px;
-    transform: translate(-50%);
+    transform: translate(-50%, -30%);
     margin-bottom: 12px;
 }
 
@@ -331,7 +331,6 @@
     color: var(--blackSuitColor);
     font-family: var(--uiFont);
     letter-spacing: var(--letterSpacing);
-    
     justify-content: space-between;
     text-align: center;
     width: 100%;
@@ -354,97 +353,36 @@
     left: 4%;
 }
 
-/* TEMP CARD */
-
-
-
 .cardc {
     position: relative;
     width: 86px;
     height: 120px;
     border-radius: 10px;
-    background-color: #ffebe7;
+    background-color: var(--menuColor);
     box-shadow: 0px 19px 38px -25px rgba(0, 0, 0, 0.3);
-  
-  
-    /* border: 1px;
-    border-style: solid;
-    border-color: #000;
-    z-index: 1; */
 }
 
-/* .centereds {
+.turnIndicator {
     position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 45%;
-    height: 30%;
-    background-color: var(--blackSuitColor);
-}
-
-.centeredsr {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 45%;
-    height: 30%;
-    background-color: #ff82a9;
-}
-
-.s {
-    width: 10px;
-    height: 10px;
-    margin: auto;
-    align-items: center;
-    background-color: var(--blackSuitColor);
-}
-
-.sr {
-    width: 10px;
-    height: 10px;
-    margin: auto;
-    align-items: center;
-    background-color: #ff82a9;
-}
-
-.redt {
-    font-family: Garamond;
-    color: #ff82a9;
+    top: -25%;
+    transform: rotateX(180deg) translate(-50%);
     width: 20px;
     height: 20px;
-    text-align: center;
-    z-index: 5;
 }
 
-.blackt {
-    font-family: Garamond;
+.gameOver {
+    position: absolute;
+    left: 50%;
+    top: 70%;
+    background-color: var(--menuColor);
+    transform: translate(-50%, -50%);
+    font-family: var(--uiFont);
     color: var(--blackSuitColor);
-    width: 15px;
-    height: 15px;
+    font-size: 100%;
     text-align: center;
-    z-index: 5;
-    padding-bottom: 2px;
-} */
-/* 
-.cardt {
-    top: 8px;
-    left: 2px;
-    position: absolute;
-    flex-direction: column;
-    display: flex;
-    justify-content: center;
-
+    box-shadow: 0px 19px 38px -0px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 1%;
+    width: fit-content;
 }
-
-.cardb {
-    position: absolute;
-    bottom: 8px;
-    right: 2px;
-
-    flex-direction: column;
-    display: flex;
-    justify-content: center;
-    transform: rotate(180deg);
-} */

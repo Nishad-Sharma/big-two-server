@@ -14,8 +14,6 @@ let wss = new WebSocketServer({ noServer: true });
 
 var registry = new GameRegistry;
 
-// registry.createGameWithId("1");
-
 let server = app.listen(port, '0.0.0.0', () => {
     console.log(`App listening on port ${port}`);
 })
@@ -47,16 +45,49 @@ app.post('/joinGame', (req, res) => {
 
 app.post('/sendTurn', (req, res) => {
     var game = registry.getGame(req.body.gameID);
-    let id = req.body.playerID;
-    let hand = req.body.hand;
 
-    if (game.executeTurn(id, hand)) {
+    if (game.executeTurn(req.body.playerID, req.body.hand)) {
         res.statusCode = 200;
         sendSocketGameState(wss, req.body.gameID);
         res.send("executed turn");
     } else {
         res.statusCode = 500;
         res.send("turn failed to execute");
+    }
+})
+
+app.post('/restartGame', (req, res) => {
+    var game = registry.getGame(req.body.gameID);
+    // let gameState = game.getGameState();
+    // console.log(JSON.stringify(gameState, null, 2));
+
+    // two socket sends to deal with the bug when restarting game
+    // and only cards which are in a players hand pre and post restart
+    // show up for client.
+    if (game.status == GameStatus.Complete) {
+        game.resetGame();
+        sendSocketGameState(wss, req.body.gameID);
+        game.deal();
+        sendSocketGameState(wss, req.body.gameID);
+        res.statusCode = 200;
+        res.send("restarted game");
+    } else {
+        res.statusCode = 500;
+        res.send("game not complete");
+    }
+})
+
+app.post('/getGameState', (req, res) => {
+    var game = registry.getGame(req.body.gameID);
+    if (game) {
+        res.statusCode = 200;
+        let gameState = game.getGameState();
+        let result = res.json(gameState);
+        console.log(JSON.stringify(gameState, null, 2));
+        return result;
+    } else {
+        res.statusCode = 500;
+        res.json({ "error": "game not found" })
     }
 })
 
@@ -77,7 +108,7 @@ wss.on('connection', socket => {
 
     socket.on('message', message => {
         const data = JSON.parse(Buffer.from(message).toString());
-        console.log(data);
+        // console.log(data);
         socket.userData = { playerID: data.message.pID, gameID: data.message.gID };
         sendSocketGameState(wss, data.message.gID);
     })

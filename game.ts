@@ -17,6 +17,15 @@ export default class Game {
         this.status = GameStatus.Lobby;
     }
 
+    resetGame() {
+        this.board = [];
+        this.isNewRound = true;
+        for (var player of this.players) {
+            player.setStatus(PlayerStatus.Waiting);
+            player.setHand([]);
+        }
+    }
+
     isExistingPlayer(playerID: string) {
         var player = this.players.find((player) => player.id == playerID); // is this reference? or copy check
         if (player) return true;
@@ -44,7 +53,7 @@ export default class Game {
     }
 
     deal() {
-        if (this.status != GameStatus.Lobby) return;
+        if (this.status == GameStatus.Playing) return;
         var deck = new Deck();
         if (this.players.length != 4) {
             console.log("Lobby does not have 4 players! player count: " + this.players.length);
@@ -79,6 +88,17 @@ export default class Game {
         };
     }
 
+    getGameState() {
+        return {
+            "id": this.id,
+            "board": this.board,
+            "players": this.players,
+            "isNewRound": this.isNewRound,
+            "status": this.status,
+        };
+    }
+
+
     executeTurn(id: string, cards: string[]): boolean {
         if (this.status != GameStatus.Playing) return false;
 
@@ -99,6 +119,14 @@ export default class Game {
             player.status = PlayerStatus.Waiting;
             this.isNewRound = false;
             player.removeCards(cards);
+            // Check if 4th and 5th card are 6 and 2 respectively, if so, move 2 to the front of card array
+            if (cards.length == 5 && cards[3].slice(0, -1) == "6" && cards[4].slice(0, -1) == "2") {
+                const lastElement = cards.pop();
+                if (lastElement !== undefined) {
+                    cards.unshift(lastElement);
+                }
+            }
+
             this.board = cards;
         }
 

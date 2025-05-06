@@ -1,7 +1,6 @@
-import React, { StrictMode } from "react";
-import ReactDOM, { createRoot } from "react-dom/client";
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import { CreateGame } from "./CreateGame";
 import Game from "./Game";
 import "./styles.css";
