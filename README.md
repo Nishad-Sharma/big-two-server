@@ -2,16 +2,24 @@
 
 build the server in the root directory
 
-```yarn```
+```
+yarn
+```
 
 then run the server
 
-```yarn run dev```
+```
+yarn run dev
+```
 
 build the client in the `client` directory
 
-```yarn```
+```
+yarn
+```
 
 then run the client
 
-```yarn start```
+```
+yarn start
+```
