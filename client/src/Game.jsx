@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { LoginForm } from "./LoginForm";
-import { Player } from "./Player";
-import { Board } from "./Board";
 import { GameOver } from "./GameOver";
+import { JoinGame } from "./JoinGame";
+import { Lobby } from "./Lobby";
+import { PlayingGame } from "./PlayingGame";
 
 export const baseURL = process.env.REACT_APP_BASE_URL || "http://localhost:8085"
 export const websocketURL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:8085"
@@ -316,105 +316,35 @@ export default function Game() {
     )
 
     if (playerID == "") {
-        return (
-            <div className="background">
-                <div className="menu">
-                    <p className="menuText" >Enter your name:</p>
-                    <LoginForm handleSubmit={handleplayerIDSubmit}></LoginForm>
-                    <br />
-                    <p className="menuText" >Share game link:</p>
-                    <div className="menuText">
-                        <a href={window.location.href} id="link" ></a>
-                        <button className="menuButton" onClick={() => copyLink()}>Copy link</button>
-                    </div>
-                </div>
-            </div>
-        )
+        return <JoinGame handleplayerIDSubmit={handleplayerIDSubmit} copyLink={copyLink} />;
     } else if (gameStatus == GameStatus.Lobby) {
-        const connectedPlayers = [];
-        players.forEach(player => {
-            connectedPlayers.push(<div className="connectedText" key={player.id}>{player.id}<br /></div>)
-        })
-        return (
-            <div className="background">
-                <div className="menu">
-                    <h1 className="menuText">Waiting for 4 players...</h1>
-                    {/* <br /> */}
-                    <h2 className="menuText">Joined:</h2>
-                    {connectedPlayers}
-                    <br />
-                    <p className="menuText" >Share game link:</p>
-                    <div className="menuText">
-                        <a href={window.location.href} id="link" ></a>
-                        <button className="menuButton" onClick={() => copyLink()}>Copy link</button>
-                    </div>
-
-                </div>
-            </div>
-        )
+        return <Lobby players={players} copyLink={copyLink} />;
     } else if (gameStatus == GameStatus.Playing) {
-        const connectedPlayers = [];
-        var position = getSelfArrayPosition(players);
-
-        for (var i = 0; i < players.length; i++) {
-            const player = players[(i + position + 1) % players.length];
-            connectedPlayers.push(<Player key={player.id} id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
-        }
-
         return (
-            <div className="background">
-                <div className="gameContainer">
-                    <div className="sortButton">
-                        <button className="menuButton" onClick={() => sortHand()}>
-                            Sort
-                        </button>
-                    </div>
-                    <div className="actionButton">
-                        <button className="menuButton" onClick={() => sendTurn(false)}>
-                            Play
-                        </button>
-                        <button className="menuButton" style={{ "margin-left": "2px" }} onClick={() => sendTurn(true)}>
-                            Pass
-                        </button>
-                    </div>
-                    {connectedPlayers}
-                    <Board hand={board} name="Board" />
-                </div>
-            </div>
+            <PlayingGame
+                players={players}
+                playerID={playerID}
+                playerLayout={playerLayout}
+                SelectCard={SelectCard}
+                sortHand={sortHand}
+                sendTurn={sendTurn}
+                board={board}
+            />
         );
     } else if (gameStatus == GameStatus.Complete) {
-        const connectedPlayers = [];
-        var position = getSelfArrayPosition(players);
-        var winner;
-
-        for (var i = 0; i < players.length; i++) {
-            if (players[i].hand.length == 0) {
-                winner = players[i].id;
-            }
-            const player = players[(i + position + 1) % players.length];
-            connectedPlayers.push(<Player key={player.id} id={player.id} hand={player.hand} status={player.status} Fn={SelectCard} position={playerLayout[i]} />)
-        }
-
         return (
-            <div className="background">
-                <div className="gameContainer">
-                    <div className="sortButton">
-                        <button className="menuButton" onClick={() => sortHand()}>
-                            Sort
-                        </button>
-                    </div>
-                    <div className="actionButton">
-                        <button className="menuButton" onClick={() => sendTurn(false)}>
-                            Play
-                        </button>
-                        <button className="menuButton" style={{ "margin-left": "2px" }} onClick={() => sendTurn(true)}>
-                            Pass
-                        </button>
-                    </div>
-                    {connectedPlayers}
-                    <Board hand={board} name="Board" />
-                </div>
-                <GameOver winner={winner} Fn={sendRestartGame} />
+            // retain snapshot of end of game screen and place Gameover section ontop
+            <div>
+                <PlayingGame
+                    players={players}
+                    playerID={playerID}
+                    playerLayout={playerLayout}
+                    SelectCard={SelectCard}
+                    sortHand={sortHand}
+                    sendTurn={sendTurn}
+                    board={board}
+                />
+                <GameOver players={players} Fn={sendRestartGame} />
             </div>
         );
     }
