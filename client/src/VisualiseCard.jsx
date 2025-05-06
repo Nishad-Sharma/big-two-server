@@ -32,7 +32,7 @@ export function VisualiseCard({ cardValue }) {
 
     if (cardValue == "cardback") {
         return (
-            <div className="cardc" style={{ border: "1px", "border-style": "solid" }} />
+            <div className="cardc" style={{ border: "1px", "border-style": "solid", "border-color": "#4766BD" }} />
         )
     }
 
