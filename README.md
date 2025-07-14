@@ -1,3 +1,7 @@
+ ![gameplay screenshot](https://github.com/Nishad-Sharma/big-two-server/blob/main/screenshot.png)
+
+
+
 ## Running big-two server and client
 
 build the server in the root directory
